@@ -37,7 +37,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["WeatherResponse"];
+                        "application/json": components["schemas"]["ApiResponse"] & {
+                            data?: components["schemas"]["WeatherData"];
+                        };
                     };
                 };
             };
@@ -81,7 +83,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["IpResponse"];
+                        "application/json": components["schemas"]["ApiResponse"] & {
+                            data?: components["schemas"]["IpData"];
+                        };
                     };
                 };
             };
@@ -112,7 +116,7 @@ export interface paths {
                     q: string;
                     /** @description 返回结果数量 */
                     count?: number;
-                    /** @description 语言代码 */
+                    /** @description 语言代码: en, zh, ja, ko, fr, de, es, pt, ru, ar */
                     lang?: string;
                 };
                 header?: never;
@@ -127,7 +131,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["SearchResponse"];
+                        "application/json": components["schemas"]["ApiResponse"] & {
+                            data?: components["schemas"]["SearchData"];
+                        };
                     };
                 };
             };
@@ -166,7 +172,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["BaiduResponse"];
+                        "application/json": components["schemas"]["ApiResponse"] & {
+                            data?: components["schemas"]["BaiduHotItem"][];
+                        };
                     };
                 };
             };
@@ -205,7 +213,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["BilibiliResponse"];
+                        "application/json": components["schemas"]["ApiResponse"] & {
+                            data?: components["schemas"]["BilibiliItem"][];
+                        };
                     };
                 };
             };
@@ -227,14 +237,14 @@ export interface paths {
         };
         /**
          * 历史上的今天
-         * @description 获取指定日期的历史大事件、出生和逝世人物。
+         * @description 获取指定日期的历史大事件。
          */
         get: {
             parameters: {
                 query?: {
-                    /** @description 月份 (01-12) */
+                    /** @description 月份 (01-12)，不填则返回当天 */
                     month?: string;
-                    /** @description 日期 (01-31) */
+                    /** @description 日期 (01-31)，不填则返回当天 */
                     day?: string;
                 };
                 header?: never;
@@ -249,7 +259,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["HistoryResponse"];
+                        "application/json": components["schemas"]["ApiResponse"] & {
+                            data?: components["schemas"]["HistoryItem"][];
+                        };
                     };
                 };
             };
@@ -291,7 +303,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["SuggestResponse"];
+                        "application/json": components["schemas"]["ApiResponse"] & {
+                            data?: components["schemas"]["SuggestData"];
+                        };
                     };
                 };
             };
@@ -335,7 +349,139 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["BaiduSearchResponse"];
+                        "application/json": components["schemas"]["ApiResponse"] & {
+                            data?: components["schemas"]["BaiduSearchData"];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/lunar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 今日农历
+         * @description 获取指定日期的农历信息，包括农历年月日、星期、节日、节气、宜忌等。
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description 日期 (YYYY-MM-DD)，不填则返回当天 */
+                    date?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description 成功 */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiResponse"] & {
+                            data?: components["schemas"]["LunarData"];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/60s": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 60秒读懂世界
+         * @description 获取每日60秒读懂世界简报，包含今日新闻摘要。
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description 成功 */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiResponse"] & {
+                            /** @description 简报内容列表 */
+                            data?: string[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/hot": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 热搜榜
+         * @description 获取多平台实时热搜榜单（百度、微博、抖音、知乎等）。
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description 热搜类型: baidu, weibo, douyin, zhihu */
+                    type?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description 成功 */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiResponse"] & {
+                            data?: components["schemas"]["HotSource"][];
+                        };
                     };
                 };
             };
@@ -352,22 +498,318 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @description 统一 API 响应格式 */
         ApiResponse: {
-            /** @description 状态码 */
-            code?: number;
-            /** @description 状态信息 */
-            message?: string;
+            /**
+             * @description 状态码，200 表示成功，其他表示错误
+             * @example 200
+             */
+            code: number;
+            /**
+             * @description 状态信息
+             * @example success
+             */
+            message: string;
             /** @description 响应数据 */
             data?: Record<string, never> | null;
         };
-        WeatherResponse: components["schemas"]["ApiResponse"];
-        IpResponse: components["schemas"]["ApiResponse"];
-        SearchResponse: components["schemas"]["ApiResponse"];
-        HistoryResponse: components["schemas"]["ApiResponse"];
-        BaiduResponse: components["schemas"]["ApiResponse"];
-        BilibiliResponse: components["schemas"]["ApiResponse"];
-        SuggestResponse: components["schemas"]["ApiResponse"];
-        BaiduSearchResponse: components["schemas"]["ApiResponse"];
+        /** @description 天气数据 */
+        WeatherData: {
+            /** @description 纬度 */
+            latitude?: number;
+            /** @description 经度 */
+            longitude?: number;
+            /** @description 当前天气 */
+            current_weather?: {
+                /** @description 温度 */
+                temperature?: number;
+                /** @description 风速 */
+                windspeed?: number;
+                /** @description 风向 */
+                winddirection?: number;
+                /** @description 天气代码 */
+                weathercode?: number;
+                /** @description 是否白天 (0/1) */
+                is_day?: number;
+                /** @description 时间 */
+                time?: string;
+            };
+        };
+        /** @description IP 定位数据 */
+        IpData: {
+            /** @description 状态 (success/fail) */
+            status?: string;
+            /** @description 国家 */
+            country?: string;
+            /** @description 国家代码 */
+            countryCode?: string;
+            /** @description 省份/地区 */
+            region?: string;
+            /** @description 省份名称 */
+            regionName?: string;
+            /** @description 城市 */
+            city?: string;
+            /** @description 邮政编码 */
+            zip?: string;
+            /** @description 纬度 */
+            lat?: number;
+            /** @description 经度 */
+            lon?: number;
+            /** @description 时区 */
+            timezone?: string;
+            /** @description 运营商 */
+            isp?: string;
+            /** @description 组织/公司 */
+            org?: string;
+            /** @description AS 号 */
+            as?: string;
+            /** @description 查询的 IP */
+            query?: string;
+        };
+        /** @description 搜索结果数据 */
+        SearchData: {
+            results?: {
+                /** @description 标题 */
+                title?: string;
+                /** @description 链接 */
+                link?: string;
+                /** @description 描述 */
+                description?: string;
+                /** @description 发布日期 */
+                pubDate?: string;
+            }[];
+            /** @description 结果总数 */
+            count?: number;
+        };
+        SearchResultItem: {
+            /** @description 标题 */
+            title?: string;
+            /** @description 链接 */
+            link?: string;
+            /** @description 描述 */
+            description?: string;
+            /** @description 发布日期 */
+            pubDate?: string;
+        };
+        /** @description 百度热搜条目 */
+        BaiduHotItem: {
+            /** @description 排名 */
+            index?: number;
+            /** @description 标题 */
+            title?: string;
+            /** @description 热度指数 */
+            hot?: string;
+            /** @description 描述 */
+            desc?: string;
+            /** @description 图片 URL */
+            image?: string;
+            /** @description 链接 */
+            url?: string;
+        };
+        /** @description B站视频条目 */
+        BilibiliItem: {
+            /** @description 排名 */
+            rank?: number;
+            /** @description 稿件avid */
+            aid?: number;
+            /** @description 稿件bvid */
+            bvid?: string;
+            /** @description 标题 */
+            title?: string;
+            /** @description 视频链接 */
+            url?: string;
+            /** @description 封面图 */
+            cover?: string;
+            /** @description 作者 */
+            author?: string;
+            /** @description 作者头像 */
+            authorFace?: string;
+            /** @description 播放量 */
+            view?: string;
+            /** @description 点赞数 */
+            like?: string;
+            /** @description 评论数 */
+            reply?: string;
+            /** @description 收藏数 */
+            favorite?: string;
+            /** @description 投币数 */
+            coin?: string;
+            /** @description 时长(秒) */
+            duration?: number;
+            /** @description 发布时间戳 */
+            pubdate?: number;
+        };
+        /** @description 历史上的今天条目 */
+        HistoryItem: {
+            /** @description 年份 */
+            year?: number;
+            /** @description 标题 */
+            title?: string;
+            /** @description 描述 */
+            desc?: string;
+            /** @description 链接 */
+            link?: string;
+            /** @description 日期 (MMDD) */
+            date?: string;
+        };
+        /** @description 搜索联想数据 */
+        SuggestData: {
+            /** @description 查询词 */
+            query?: string;
+            /** @description 联想词列表 */
+            suggestions?: string[];
+        };
+        /** @description 百度搜索结果数据 */
+        BaiduSearchData: {
+            /** @description 查询词 */
+            query?: string;
+            results?: {
+                /** @description 标题 */
+                title?: string;
+                /** @description 链接 */
+                link?: string;
+                /** @description 描述 */
+                description?: string;
+                /** @description 日期 */
+                date?: string;
+            }[];
+            /** @description 结果总数 */
+            count?: number;
+            /**
+             * @description 数据源
+             * @example baidu
+             */
+            source?: string;
+            /**
+             * @description 状态
+             * @example alpha
+             */
+            status?: string;
+        };
+        /** @description 农历/黄历数据 */
+        LunarData: {
+            /** @description 公历日期 (YYYY-MM-DD) */
+            date?: string;
+            /** @description 公历信息 */
+            solar?: {
+                /** @description 年 */
+                year?: number;
+                /** @description 月 */
+                month?: number;
+                /** @description 日 */
+                day?: number;
+                /** @description 星期 */
+                weekday?: string;
+                /** @description 星期索引 (0-6) */
+                weekdayIndex?: number;
+            };
+            /** @description 农历信息 */
+            lunar?: {
+                /** @description 农历年 */
+                year?: number;
+                /** @description 农历月 */
+                month?: number;
+                /** @description 农历日 */
+                day?: number;
+                /** @description 农历月名称 */
+                monthName?: string;
+                /** @description 农历日名称 */
+                dayName?: string;
+                /** @description 是否闰月 */
+                isLeapMonth?: boolean;
+                /** @description 年生肖 */
+                yearShengXiao?: string;
+                /** @description 月生肖 */
+                monthShengXiao?: string;
+                /** @description 日生肖 */
+                dayShengXiao?: string;
+            };
+            /** @description 干支信息 */
+            ganzhi?: {
+                /** @description 年干支 */
+                year?: string;
+                /** @description 月干支 */
+                month?: string;
+                /** @description 日干支 */
+                day?: string;
+                /** @description 时干支 */
+                hour?: string;
+                /** @description 日纳音 */
+                naYin?: string;
+            };
+            /** @description 节日信息 */
+            festivals?: {
+                /** @description 法定节假日 */
+                holiday?: string[];
+                /** @description 农历节日 */
+                lunar?: string;
+                /** @description 公历节日 */
+                solar?: string;
+                /** @description 计算得出的节日 */
+                computed?: string;
+            };
+            /** @description 节气信息 */
+            solarTerm?: {
+                /** @description 当前节气 */
+                current?: string;
+                /** @description 显示名称 */
+                displayName?: string;
+                /** @description 状态 */
+                status?: string;
+            };
+            /** @description 宜做的事 */
+            yi?: string[];
+            /** @description 忌做的事 */
+            ji?: string[];
+            /** @description 冲煞信息 */
+            chong?: {
+                /** @description 冲的生肖 */
+                description?: string;
+                /** @description 煞的方向 */
+                sha?: string;
+            };
+            /** @description 彭祖百忌 */
+            pengZu?: {
+                /** @description 天干百忌 */
+                gan?: string;
+                /** @description 地支百忌 */
+                zhi?: string;
+            };
+            /** @description 值日星神 */
+            zhiXing?: {
+                /** @description 星神名称 */
+                value?: string;
+                /** @description 说明 */
+                description?: string;
+            };
+            /** @description 六曜 */
+            liuYao?: {
+                /** @description 六曜名称 */
+                value?: string;
+                /** @description 说明 */
+                description?: string;
+            };
+        };
+        /** @description 热搜来源 */
+        HotSource: {
+            /** @description 平台名称 */
+            name?: string;
+            /** @description 平台别名 */
+            alias?: string;
+            /** @description 该平台的热搜列表 */
+            data?: {
+                /** @description 标题 */
+                name?: string;
+                /** @description 别名 */
+                alias?: string;
+                /** @description 链接 */
+                url?: string;
+                /** @description 热度 */
+                hot?: string;
+                /** @description 描述 */
+                desc?: string;
+            }[];
+        };
     };
     responses: never;
     parameters: never;

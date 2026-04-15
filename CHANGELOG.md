@@ -1,5 +1,23 @@
 # Qimi API 更新日志
 
+## v1.1.0 (2026-04-15)
+
+### 新增功能
+
+- **60秒读懂世界 API** (`/api/60s`) - 每日简报新闻摘要
+- **多平台热搜榜 API** (`/api/hot`) - 百度/微博/抖音/知乎热搜
+- **完整黄历 API** (`/api/lunar`) - 农历/干支/宜忌/节气/吉神凶煞
+
+### 优化改进
+
+- **统一 API 响应格式** - 所有接口采用 `{ code, message, data }` 格式
+- **完善 OpenAPI 文档** - 详细定义 data schema，方便开发者对接
+- **新增 TypeScript 类型声明** - lunar-javascript 库类型支持
+- **项目工程化升级** - ESLint + Prettier + Husky + lint-staged
+- **路由管理器优化** - 集中管理 API 路由分发
+
+---
+
 ## v1.0.1 (2026-04-15)
 
 ### 新增功能

@@ -15,12 +15,6 @@ interface SearchResult {
   pubDate: string;
 }
 
-interface ApiResponse<T = unknown> {
-  code: number;
-  message: string;
-  data: T;
-}
-
 const LANG_TO_MKT: Record<string, string> = {
   en: 'en-US',
   zh: 'zh-CN',
@@ -59,15 +53,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const mkt = LANG_TO_MKT[lang] || 'zh-CN';
 
   if (!q) {
-    return res.status(200).json({ code: 400, message: 'Missing required parameter: q', data: null });
+    return res
+      .status(200)
+      .json({ code: 400, message: 'Missing required parameter: q', data: null });
   }
 
   try {
     const response = await axios.get('https://www.bing.com/search', {
       params: { q, count: Math.min(count, 15), mkt, format: 'rss' },
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        Accept: 'application/rss+xml, application/xml, text/xml',
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'application/rss+xml, application/xml, text/xml',
       },
       timeout: 10000,
     });

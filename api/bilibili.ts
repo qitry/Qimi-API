@@ -15,12 +15,6 @@ interface BilibiliItem {
   pubdate: number;
 }
 
-interface ApiResponse<T = unknown> {
-  code: number;
-  message: string;
-  data: T;
-}
-
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -33,7 +27,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const response = await axios.get(BILIBILI_API, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
       },
       timeout: 10000,
     });

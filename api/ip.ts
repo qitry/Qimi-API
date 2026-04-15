@@ -3,12 +3,6 @@ import axios from 'axios';
 
 const IP_API_BASE_URL = 'https://ip-api.com/json/';
 
-interface ApiResponse<T = unknown> {
-  code: number;
-  message: string;
-  data: T;
-}
-
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -25,7 +19,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       params: {
         lang,
         ...rest,
-        fields: rest.fields || 'status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query',
+        fields:
+          rest.fields ||
+          'status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query',
       },
     });
 

@@ -9,12 +9,6 @@ interface SearchResult {
   date: string;
 }
 
-interface ApiResponse<T = unknown> {
-  code: number;
-  message: string;
-  data: T;
-}
-
 const BAIDU_SEARCH_URL = 'https://www.baidu.com/s';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -29,7 +23,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { q, count = '10' } = req.query;
 
   if (!q || typeof q !== 'string') {
-    return res.status(200).json({ code: 400, message: 'Missing required parameter: q', data: null });
+    return res
+      .status(200)
+      .json({ code: 400, message: 'Missing required parameter: q', data: null });
   }
 
   const num = Math.min(parseInt(count as string) || 10, 20);
@@ -38,8 +34,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const response = await axios.get(BAIDU_SEARCH_URL, {
       params: { wd: q, rn: num, ie: 'utf-8', inputT: Math.floor(Date.now() / 1000) },
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+        'Accept':
+          'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
         'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
         'Accept-Encoding': 'gzip, deflate, br',
         'Connection': 'keep-alive',
@@ -69,9 +67,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     $('div.result, div.c-result, div.result-op').each((_, el) => {
       const $el = $(el);
-      const title = $el.find('h3.c-title a, h3 a, .c-title a, a.c-title').text().trim() ||
-                    $el.find('h3').first().text().trim() ||
-                    $el.find('a').filter((_, a) => $(a).text().length > 10).first().text().trim();
+      const title =
+        $el.find('h3.c-title a, h3 a, .c-title a, a.c-title').text().trim() ||
+        $el.find('h3').first().text().trim() ||
+        $el
+          .find('a')
+          .filter((_, a) => $(a).text().length > 10)
+          .first()
+          .text()
+          .trim();
 
       let link = $el.find('h3.c-title a, h3 a, .c-title a, a.c-title').attr('href') || '';
 
@@ -80,9 +84,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if (dataUrl) link = dataUrl;
       }
 
-      const description = $el.find('.c-abstract, .c-span-last span, span[data-content], p').first().text().trim() ||
-                          $el.find('*').filter((_, el) => $(el).text().length > 50 && $(el).text().length < 300).first().text().trim() ||
-                          '';
+      const description =
+        $el.find('.c-abstract, .c-span-last span, span[data-content], p').first().text().trim() ||
+        $el
+          .find('*')
+          .filter((_, el) => $(el).text().length > 50 && $(el).text().length < 300)
+          .first()
+          .text()
+          .trim() ||
+        '';
 
       const dateMatch = $el.text().match(/\d{4}年\d{1,2}月\d{1,2}日|(\d{4}-\d{2}-\d{2})/);
       const date = dateMatch ? dateMatch[0] : '';
@@ -102,9 +112,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const $el = $(el);
         const href = $el.attr('href') || '';
         const text = $el.text().trim();
-        if (href.startsWith('http') && text.length > 10 && !href.includes('baidu.com') && !href.includes('baidubce.com')) {
+        if (
+          href.startsWith('http') &&
+          text.length > 10 &&
+          !href.includes('baidu.com') &&
+          !href.includes('baidubce.com')
+        ) {
           const container = $el.parent().parent();
-          const desc = container.find('p, span').filter((_, el) => $(el).text().length > 20 && $(el).text().length < 200).first().text().trim();
+          const desc = container
+            .find('p, span')
+            .filter((_, el) => $(el).text().length > 20 && $(el).text().length < 200)
+            .first()
+            .text()
+            .trim();
           if (results.length < num) {
             results.push({
               title: text.substring(0, 200),

@@ -4,12 +4,6 @@ import axios from 'axios';
 const OPEN_METEO_BASE_URL = 'https://api.open-meteo.com/v1/forecast';
 const IP_API_BASE_URL = 'https://ip-api.com/json/';
 
-interface ApiResponse<T = unknown> {
-  code: number;
-  message: string;
-  data: T;
-}
-
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -28,7 +22,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const ipStr = Array.isArray(clientIp) ? clientIp[0] : clientIp;
 
     try {
-      const ipRes = await axios.get(`${IP_API_BASE_URL}${ipStr === '::1' || ipStr === '127.0.0.1' ? '' : ipStr}`);
+      const ipRes = await axios.get(
+        `${IP_API_BASE_URL}${ipStr === '::1' || ipStr === '127.0.0.1' ? '' : ipStr}`,
+      );
       const ipData = ipRes.data;
 
       if (ipData.status === 'success') {

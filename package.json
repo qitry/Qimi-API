@@ -6,23 +6,53 @@
   "packageManager": "yarn@4.1.1",
   "scripts": {
     "generate-types": "openapi-typescript ./api/openapi-spec.json -o ./api/types.ts",
-    "test": "bash test_apis.sh"
+    "test": "bash test_apis.sh",
+    "lint": "eslint api/ lib/ --ext .ts",
+    "lint:fix": "eslint api/ lib/ --ext .ts --fix",
+    "format": "prettier --write \"**/*.{ts,js,json,md,yml,yaml}\"",
+    "format:check": "prettier --check \"**/*.{ts,js,json,md,yml,yaml}\"",
+    "typecheck": "tsc --noEmit",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@vercel/node": "^5.7.5",
     "axios": "^1.6.0",
-    "cheerio": "^1.0.0"
+    "cheerio": "^1.0.0",
+    "lunar-javascript": "^1.7.7"
   },
   "devDependencies": {
+    "@eslint/js": "^8.57.0",
     "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.0.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.0.0",
     "openapi-typescript": "^7.0.0",
+    "prettier": "^3.0.0",
     "typescript": "^5.0.0",
     "vercel": "^32.0.0"
   },
   "resolutions": {
     "undici": "^6.23.1",
     "path-to-regexp": "^6.3.0",
-    "minimatch": "^10.0.0",
-    "ajv": "^8.17.1"
+    "minimatch": "^10.0.0"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.json": [
+      "prettier --write"
+    ],
+    "*.md": [
+      "prettier --write"
+    ]
   }
 }
