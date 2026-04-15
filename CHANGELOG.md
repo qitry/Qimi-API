@@ -16,6 +16,6 @@
 
 - **天气查询 API** (`/api/weather`) - 支持 IP 自动定位
 - **IP 定位 API** (`/api/ip`) - 查询 IP/域名地理位置
-- **网页搜索 API** (`/api/search`) - 基于 Brave Search
+- **网页搜索 API** (`/api/search`) - Bing 搜索结果
 - **B站热榜 API** (`/api/bilibili`) - 获取热门视频榜单
 - **历史上的今天 API** (`/api/history`) - 历史事件查询
