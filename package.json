@@ -4,7 +4,6 @@
   "description": "基于 Node.js/TypeScript 开发、符合 OpenAPI 规范的免费 API 服务集合",
   "license": "MIT",
   "packageManager": "yarn@4.1.1",
-  "type": "module",
   "scripts": {
     "generate-types": "openapi-typescript ./api/openapi-spec.json -o ./api/types.ts",
     "test": "bash test_apis.sh"
