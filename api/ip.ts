@@ -30,12 +30,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     if (response.data.status === 'fail') {
-      return res.status(200).json<ApiResponse>({ code: 400, message: 'Query failed', data: response.data });
+      return res.status(200).json({ code: 400, message: 'Query failed', data: response.data });
     }
 
-    return res.status(200).json<ApiResponse>({ code: 200, message: 'success', data: response.data });
+    return res.status(200).json({ code: 200, message: 'success', data: response.data });
   } catch (error: any) {
-    return res.status(200).json<ApiResponse>({
+    return res.status(200).json({
       code: error.response?.status || 500,
       message: 'IP lookup failed',
       data: null,

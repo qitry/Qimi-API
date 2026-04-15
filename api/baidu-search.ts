@@ -29,7 +29,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { q, count = '10' } = req.query;
 
   if (!q || typeof q !== 'string') {
-    return res.status(200).json<ApiResponse>({ code: 400, message: 'Missing required parameter: q', data: null });
+    return res.status(200).json({ code: 400, message: 'Missing required parameter: q', data: null });
   }
 
   const num = Math.min(parseInt(count as string) || 10, 20);
@@ -58,7 +58,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const $ = cheerio.load(response.data);
 
     if ($('title').text().includes('安全验证') || $('body').text().includes('百度安全验证')) {
-      return res.status(200).json<ApiResponse>({
+      return res.status(200).json({
         code: 503,
         message: 'Baidu security check triggered, try again later',
         data: null,
@@ -117,7 +117,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    return res.status(200).json<ApiResponse>({
+    return res.status(200).json({
       code: 200,
       message: 'success',
       data: {
@@ -129,7 +129,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       },
     });
   } catch (error: any) {
-    return res.status(200).json<ApiResponse>({
+    return res.status(200).json({
       code: error.response?.status || 500,
       message: 'Search service unavailable',
       data: null,

@@ -59,7 +59,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const mkt = LANG_TO_MKT[lang] || 'zh-CN';
 
   if (!q) {
-    return res.status(200).json<ApiResponse>({ code: 400, message: 'Missing required parameter: q', data: null });
+    return res.status(200).json({ code: 400, message: 'Missing required parameter: q', data: null });
   }
 
   try {
@@ -84,13 +84,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     });
 
-    return res.status(200).json<ApiResponse>({
+    return res.status(200).json({
       code: 200,
       message: 'success',
       data: { results: items.slice(0, count), count: items.length },
     });
   } catch (error: any) {
-    return res.status(200).json<ApiResponse>({
+    return res.status(200).json({
       code: error.response?.status || 500,
       message: 'Search service unavailable',
       data: null,

@@ -21,7 +21,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { q } = req.query;
 
   if (!q || typeof q !== 'string') {
-    return res.status(200).json<ApiResponse>({ code: 400, message: 'Missing required parameter: q', data: null });
+    return res.status(200).json({ code: 400, message: 'Missing required parameter: q', data: null });
   }
 
   try {
@@ -40,7 +40,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const data = JSON.parse(text);
 
     if (Array.isArray(data) && Array.isArray(data[1])) {
-      return res.status(200).json<ApiResponse>({
+      return res.status(200).json({
         code: 200,
         message: 'success',
         data: {
@@ -50,9 +50,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    return res.status(200).json<ApiResponse>({ code: 200, message: 'success', data: { query: q, suggestions: [] } });
+    return res.status(200).json({ code: 200, message: 'success', data: { query: q, suggestions: [] } });
   } catch (error: any) {
-    return res.status(200).json<ApiResponse>({
+    return res.status(200).json({
       code: error.response?.status || 500,
       message: 'Suggestion service unavailable',
       data: null,

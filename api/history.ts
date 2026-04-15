@@ -31,12 +31,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const todayData = allData[dateKey];
 
     if (!todayData) {
-      return res.status(200).json<ApiResponse>({ code: 404, message: `No data for ${dateKey}`, data: null });
+      return res.status(200).json({ code: 404, message: `No data for ${dateKey}`, data: null });
     }
 
-    return res.status(200).json<ApiResponse>({ code: 200, message: 'success', data: { date: dateKey, ...todayData } });
+    return res.status(200).json({ code: 200, message: 'success', data: { date: dateKey, ...todayData } });
   } catch (error: any) {
-    return res.status(200).json<ApiResponse>({
+    return res.status(200).json({
       code: error.response?.status || 500,
       message: 'History data unavailable',
       data: null,

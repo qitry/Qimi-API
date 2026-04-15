@@ -39,7 +39,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     if (response.data.code !== 0) {
-      return res.status(200).json<ApiResponse>({ code: 500, message: 'Hot list unavailable', data: null });
+      return res.status(200).json({ code: 500, message: 'Hot list unavailable', data: null });
     }
 
     const list = response.data.data.list.map((item: BilibiliItem, index: number) => ({
@@ -60,8 +60,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       pubdate: item.pubdate,
     }));
 
-    return res.status(200).json<ApiResponse>({ code: 200, message: 'success', data: list });
+    return res.status(200).json({ code: 200, message: 'success', data: list });
   } catch (error: any) {
-    return res.status(200).json<ApiResponse>({ code: 500, message: 'Hot list unavailable', data: null });
+    return res.status(200).json({ code: 500, message: 'Hot list unavailable', data: null });
   }
 }

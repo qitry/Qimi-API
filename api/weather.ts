@@ -36,10 +36,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         lon = ipData.lon;
         res.setHeader('X-Location-City', ipData.city || '');
       } else {
-        return res.status(200).json<ApiResponse>({ code: 400, message: 'IP 定位失败', data: null });
+        return res.status(200).json({ code: 400, message: 'IP 定位失败', data: null });
       }
     } catch {
-      return res.status(200).json<ApiResponse>({ code: 500, message: '定位服务不可用', data: null });
+      return res.status(200).json({ code: 500, message: '定位服务不可用', data: null });
     }
   }
 
@@ -48,7 +48,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       params: { latitude: lat, longitude: lon, current_weather: true, ...rest },
     });
 
-    return res.status(200).json<ApiResponse>({
+    return res.status(200).json({
       code: 200,
       message: 'success',
       data: {
@@ -57,7 +57,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       },
     });
   } catch (error: any) {
-    return res.status(200).json<ApiResponse>({
+    return res.status(200).json({
       code: error.response?.status || 500,
       message: 'Weather service unavailable',
       data: null,
