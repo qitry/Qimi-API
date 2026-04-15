@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import axios from 'axios';
 
-const IP_API_BASE_URL = 'http://ip-api.com/json/';
+const IP_API_BASE_URL = 'https://ip-api.com/json/';
 
 interface ApiResponse<T = unknown> {
   code: number;
