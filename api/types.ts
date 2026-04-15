@@ -140,7 +140,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/hot": {
+    "/api/baidu": {
         parameters: {
             query?: never;
             header?: never;
@@ -166,7 +166,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["HotResponse"];
+                        "application/json": components["schemas"]["BaiduResponse"];
                     };
                 };
             };
@@ -179,7 +179,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/bangumi": {
+    "/api/bilibili": {
         parameters: {
             query?: never;
             header?: never;
@@ -205,7 +205,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["BangumiResponse"];
+                        "application/json": components["schemas"]["BilibiliResponse"];
                     };
                 };
             };
@@ -262,6 +262,92 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/suggest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 搜索联想
+         * @description 获取百度搜索联想词列表。
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description 搜索关键词 */
+                    q: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description 成功 */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SuggestResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/baidu-search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 百度搜索 (Alpha)
+         * @description 获取百度搜索结果。状态: Alpha - 可能不稳定
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description 搜索关键词 */
+                    q: string;
+                    /** @description 返回结果数量 */
+                    count?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description 成功 */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["BaiduSearchResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -278,8 +364,10 @@ export interface components {
         IpResponse: components["schemas"]["ApiResponse"];
         SearchResponse: components["schemas"]["ApiResponse"];
         HistoryResponse: components["schemas"]["ApiResponse"];
-        HotResponse: components["schemas"]["ApiResponse"];
-        BangumiResponse: components["schemas"]["ApiResponse"];
+        BaiduResponse: components["schemas"]["ApiResponse"];
+        BilibiliResponse: components["schemas"]["ApiResponse"];
+        SuggestResponse: components["schemas"]["ApiResponse"];
+        BaiduSearchResponse: components["schemas"]["ApiResponse"];
     };
     responses: never;
     parameters: never;

@@ -55,8 +55,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const query = req.query as SearchQuery;
   const q = getQueryValue(query.q)?.trim();
   const count = parseInteger(getQueryValue(query.count));
-  const lang = getQueryValue(query.lang) || 'en';
-  const mkt = LANG_TO_MKT[lang] || 'en-US';
+  const lang = getQueryValue(query.lang) || 'zh';
+  const mkt = LANG_TO_MKT[lang] || 'zh-CN';
 
   if (!q) {
     return res.status(200).json<ApiResponse>({ code: 400, message: 'Missing required parameter: q', data: null });

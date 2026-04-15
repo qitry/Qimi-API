@@ -69,7 +69,7 @@
         }
       }
     },
-    "/api/hot": {
+    "/api/baidu": {
       "get": {
         "summary": "百度热搜",
         "description": "获取百度实时热搜榜单。",
@@ -79,14 +79,14 @@
             "description": "成功",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HotResponse" }
+                "schema": { "$ref": "#/components/schemas/BaiduResponse" }
               }
             }
           }
         }
       }
     },
-    "/api/bangumi": {
+    "/api/bilibili": {
       "get": {
         "summary": "B站热榜",
         "description": "获取B站热门视频榜单。",
@@ -96,7 +96,7 @@
             "description": "成功",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/BangumiResponse" }
+                "schema": { "$ref": "#/components/schemas/BilibiliResponse" }
               }
             }
           }
@@ -122,6 +122,45 @@
           }
         }
       }
+    },
+    "/api/suggest": {
+      "get": {
+        "summary": "搜索联想",
+        "description": "获取百度搜索联想词列表。",
+        "parameters": [
+          { "name": "q", "in": "query", "required": true, "schema": { "type": "string" }, "description": "搜索关键词" }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SuggestResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/baidu-search": {
+      "get": {
+        "summary": "百度搜索 (Alpha)",
+        "description": "获取百度搜索结果。状态: Alpha - 可能不稳定",
+        "parameters": [
+          { "name": "q", "in": "query", "required": true, "schema": { "type": "string" }, "description": "搜索关键词" },
+          { "name": "count", "in": "query", "schema": { "type": "integer", "minimum": 1, "maximum": 20, "default": 10 }, "description": "返回结果数量" }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/BaiduSearchResponse" }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -138,8 +177,10 @@
       "IpResponse": { "$ref": "#/components/schemas/ApiResponse" },
       "SearchResponse": { "$ref": "#/components/schemas/ApiResponse" },
       "HistoryResponse": { "$ref": "#/components/schemas/ApiResponse" },
-      "HotResponse": { "$ref": "#/components/schemas/ApiResponse" },
-      "BangumiResponse": { "$ref": "#/components/schemas/ApiResponse" }
+      "BaiduResponse": { "$ref": "#/components/schemas/ApiResponse" },
+      "BilibiliResponse": { "$ref": "#/components/schemas/ApiResponse" },
+      "SuggestResponse": { "$ref": "#/components/schemas/ApiResponse" },
+      "BaiduSearchResponse": { "$ref": "#/components/schemas/ApiResponse" }
     }
   }
 }
