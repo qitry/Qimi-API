@@ -1,0 +1,29 @@
+{
+  "name": "qimi-api",
+  "version": "1.0.0",
+  "description": "基于 Node.js/TypeScript 开发、符合 OpenAPI 规范的免费 API 服务集合",
+  "license": "MIT",
+  "packageManager": "yarn@4.1.1",
+  "type": "module",
+  "scripts": {
+    "generate-types": "openapi-typescript ./api/openapi-spec.json -o ./api/types.ts",
+    "test": "bash test_apis.sh"
+  },
+  "dependencies": {
+    "@vercel/node": "^5.7.5",
+    "axios": "^1.6.0",
+    "cheerio": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "openapi-typescript": "^7.0.0",
+    "typescript": "^5.0.0",
+    "vercel": "^32.0.0"
+  },
+  "resolutions": {
+    "undici": "^6.23.1",
+    "path-to-regexp": "^6.3.0",
+    "minimatch": "^10.0.0",
+    "ajv": "^8.17.1"
+  }
+}

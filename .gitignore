@@ -1,0 +1,6 @@
+node_modules/
+.yarn/
+.vercel/
+.env
+*.log
+.DS_Store

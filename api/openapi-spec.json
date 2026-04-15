@@ -1,0 +1,145 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Qimi API",
+    "description": "基于 Node.js/TypeScript 开发、符合 OpenAPI 规范的免费 API 服务集合",
+    "version": "1.0.0"
+  },
+  "servers": [{ "url": "/", "description": "当前环境" }],
+  "paths": {
+    "/api/weather": {
+      "get": {
+        "summary": "天气查询",
+        "description": "获取指定坐标的当前天气信息。支持通过 IP 自动定位。",
+        "parameters": [
+          { "name": "latitude", "in": "query", "schema": { "type": "number" }, "description": "纬度" },
+          { "name": "longitude", "in": "query", "schema": { "type": "number" }, "description": "经度" },
+          { "name": "ip", "in": "query", "schema": { "type": "string" }, "description": "指定 IP 自动定位" }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/WeatherResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ip": {
+      "get": {
+        "summary": "IP 定位",
+        "description": "查询 IP 或域名的地理位置信息。",
+        "parameters": [
+          { "name": "query", "in": "query", "schema": { "type": "string" }, "description": "目标 IP 或域名" },
+          { "name": "lang", "in": "query", "schema": { "type": "string", "default": "zh-CN" }, "description": "返回语言" }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/IpResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/search": {
+      "get": {
+        "summary": "网页搜索",
+        "description": "执行网页搜索，返回标题、描述和链接。",
+        "parameters": [
+          { "name": "q", "in": "query", "required": true, "schema": { "type": "string" }, "description": "搜索关键词" },
+          { "name": "count", "in": "query", "schema": { "type": "integer", "minimum": 1, "maximum": 50, "default": 10 }, "description": "返回结果数量" },
+          { "name": "lang", "in": "query", "schema": { "type": "string", "default": "en" }, "description": "语言代码" }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SearchResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hot": {
+      "get": {
+        "summary": "百度热搜",
+        "description": "获取百度实时热搜榜单。",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HotResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/bangumi": {
+      "get": {
+        "summary": "B站热榜",
+        "description": "获取B站热门视频榜单。",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/BangumiResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/history": {
+      "get": {
+        "summary": "历史上的今天",
+        "description": "获取指定日期的历史大事件、出生和逝世人物。",
+        "parameters": [
+          { "name": "month", "in": "query", "schema": { "type": "string" }, "description": "月份 (01-12)" },
+          { "name": "day", "in": "query", "schema": { "type": "string" }, "description": "日期 (01-31)" }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HistoryResponse" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApiResponse": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "integer", "description": "状态码" },
+          "message": { "type": "string", "description": "状态信息" },
+          "data": { "type": "object", "nullable": true, "description": "响应数据" }
+        }
+      },
+      "WeatherResponse": { "$ref": "#/components/schemas/ApiResponse" },
+      "IpResponse": { "$ref": "#/components/schemas/ApiResponse" },
+      "SearchResponse": { "$ref": "#/components/schemas/ApiResponse" },
+      "HistoryResponse": { "$ref": "#/components/schemas/ApiResponse" },
+      "HotResponse": { "$ref": "#/components/schemas/ApiResponse" },
+      "BangumiResponse": { "$ref": "#/components/schemas/ApiResponse" }
+    }
+  }
+}

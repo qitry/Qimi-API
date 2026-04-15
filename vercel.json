@@ -1,0 +1,17 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/api/openapi", "destination": "/api/openapi-spec.json" },
+    { "source": "/api/openapi.json", "destination": "/api/openapi-spec.json" },
+    { "source": "/api/(.*)", "destination": "/api/$1.ts" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/api/openapi-spec.json",
+      "headers": [
+        { "key": "Content-Type", "value": "application/json" }
+      ]
+    }
+  ]
+}
