@@ -1,5 +1,4 @@
 {
-  "cleanUrls": true,
   "rewrites": [
     { "source": "/api/openapi", "destination": "/api/openapi.ts" },
     { "source": "/api/openapi.json", "destination": "/api/openapi.ts" },
