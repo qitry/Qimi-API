@@ -1,0 +1,46 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.registerRoutes = registerRoutes;
+const weather_1 = __importDefault(require("./weather"));
+const ip_1 = __importDefault(require("./ip"));
+const search_1 = __importDefault(require("./search"));
+const baidu_1 = __importDefault(require("./baidu"));
+const bilibili_1 = __importDefault(require("./bilibili"));
+const history_1 = __importDefault(require("./history"));
+const suggest_1 = __importDefault(require("./suggest"));
+const baidu_search_1 = __importDefault(require("./baidu-search"));
+const lunar_1 = __importDefault(require("./lunar"));
+const _60s_1 = __importDefault(require("./60s"));
+const hot_1 = __importDefault(require("./hot"));
+const hot_weibo_1 = __importDefault(require("./hot-weibo"));
+const hot_baidu_1 = __importDefault(require("./hot-baidu"));
+const hot_douyin_1 = __importDefault(require("./hot-douyin"));
+const hot_bilibili_1 = __importDefault(require("./hot-bilibili"));
+const hot_zhihu_1 = __importDefault(require("./hot-zhihu"));
+const hot_qqnews_hot_1 = __importDefault(require("./hot-qqnews-hot"));
+const hot_qqnews_curation_1 = __importDefault(require("./hot-qqnews-curation"));
+const hot_news163_toutiao_1 = __importDefault(require("./hot-news163-toutiao"));
+function registerRoutes(app) {
+    app.get('/api/weather', weather_1.default);
+    app.get('/api/ip', ip_1.default);
+    app.get('/api/search', search_1.default);
+    app.get('/api/baidu', baidu_1.default);
+    app.get('/api/bilibili', bilibili_1.default);
+    app.get('/api/history', history_1.default);
+    app.get('/api/suggest', suggest_1.default);
+    app.get('/api/baidu-search', baidu_search_1.default);
+    app.get('/api/lunar', lunar_1.default);
+    app.get('/api/60s', _60s_1.default);
+    app.get('/api/hot', hot_1.default);
+    app.get('/api/hot/weibo', hot_weibo_1.default);
+    app.get('/api/hot/baidu', hot_baidu_1.default);
+    app.get('/api/hot/douyin', hot_douyin_1.default);
+    app.get('/api/hot/bilibili', hot_bilibili_1.default);
+    app.get('/api/hot/zhihu', hot_zhihu_1.default);
+    app.get('/api/hot/qqnews-hot', hot_qqnews_hot_1.default);
+    app.get('/api/hot/qqnews-curation', hot_qqnews_curation_1.default);
+    app.get('/api/hot/news163-toutiao', hot_news163_toutiao_1.default);
+}

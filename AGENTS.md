@@ -2,34 +2,49 @@
 
 ## Commands
 
-- `yarn test` - smoke-test all endpoints (requires `vercel dev` running in another terminal)
-- `yarn generate-types` - regenerate `api/types.ts` from OpenAPI spec
-- `vercel dev` - start local Vercel runtime for testing
+- `yarn dev` - start development server with hot reload
+- `yarn start` - start production server
+- `yarn build` - compile TypeScript to JavaScript
+- `yarn test` - smoke-test all endpoints (requires server running)
 - `yarn typecheck` - type-check using TypeScript compiler
 - `yarn lint` - lint all files using ESLint
 - `yarn lint:fix` - auto-fix linting issues
+- `yarn format` - format code with Prettier
 
 ## Project Structure
 
-- `api/*.ts` - Vercel serverless handlers (weather, ip, search, history, 60s, hot, lunar, openapi)
-- `api/openapi-spec.json` - source OpenAPI document
-- `api/types.ts` - **generated** from spec; do not edit manually
-- `lib/` - Core utilities (rate limit, logger, error handling, etc.)
-- `types/` - TypeScript declaration files
-- `vercel.json` - routes `/api/*` to handlers, everything else to `index.html`
-- `search.html` - static search demo page
-- `.vercel/` - do not commit
+```
+qimiapi/
+├── src/
+│   ├── app.ts          # Express server entry point
+│   └── routes/         # API route handlers (one file per endpoint)
+│       ├── index.ts    # Route registration
+│       ├── weather.ts  # 天气查询
+│       ├── ip.ts       # IP 归属地查询
+│       ├── search.ts   # Bing 搜索
+│       ├── baidu.ts    # 百度热搜
+│       ├── bilibili.ts # B站热榜
+│       ├── history.ts  # 历史上的今天
+│       ├── suggest.ts  # 百度搜索建议
+│       ├── baidu-search.ts # 百度搜索
+│       ├── lunar.ts    # 农历黄历
+│       ├── 60s.ts      # 60秒读懂世界
+│       └── hot.ts      # 综合热搜榜
+├── lib/                # Core utilities (rate limit, logger, etc.)
+├── dist/               # Compiled JavaScript output
+├── types/              # TypeScript declaration files
+└── test_apis.sh       # API smoke test script
+```
 
 ## TypeScript
 
 - Strict mode enabled
 - 2-space indentation, single quotes, semicolons
-- Use types from `api/types.ts` for request/response shapes
 - Custom type declarations in `types/` directory
 
 ## Testing
 
-- Run `vercel dev` first, then `yarn test` in parallel
+- Run `yarn dev` first, then `yarn test` in parallel
 - Test script: `bash test_apis.sh http://localhost:3000 --raw`
 - Add new endpoint tests to `test_apis.sh`
 
@@ -48,12 +63,22 @@
 
 ## Environment Variables
 
+- `PORT` - 服务器端口 (默认: 3000)
 - `NODE_ENV` - 运行环境 (`development`/`production`)
 - `LOG_LEVEL` - 日志级别 (`debug`/`info`/`warn`/`error`)
 
-## Important
+## PM2 Deployment
 
-- Always run `yarn generate-types` after modifying `api/openapi-spec.json`
-- Include regenerated `api/types.ts` in the same PR as spec changes
-- `search.ts` handler does not use the `ip` query param (spec 定义了但未实现); 勿依赖此参数
-- `/api/weather` 的 `ip` 参数实际可用 (handler 实现正确，但 spec 未注明 IP 自动定位逻辑)
+```bash
+# Build first
+yarn build
+
+# Start with PM2
+pm2 start dist/app.js --name qimiapi
+
+# Save PM2 process list
+pm2 save
+
+# Setup startup script
+pm2 startup
+```

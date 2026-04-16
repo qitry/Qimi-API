@@ -1,8 +1,6 @@
-import type { VercelRequest } from '@vercel/node';
+import type { Request } from 'express';
 
-export function getClientIp(
-  req: VercelRequest | { headers: Record<string, unknown>; socket: { remoteAddress?: string } }
-): string {
+export function getClientIp(req: Request): string {
   const forwarded = req.headers['x-forwarded-for'];
   if (forwarded) {
     const ips = Array.isArray(forwarded) ? forwarded[0] : forwarded;

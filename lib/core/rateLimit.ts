@@ -1,4 +1,4 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+import type { Request, Response } from 'express';
 import { getClientIp } from '../utils/helpers';
 import type { RateLimitConfig } from '../types';
 
@@ -25,10 +25,10 @@ setInterval(() => {
 
 export function rateLimit(
   config: Partial<RateLimitConfig> = {},
-): (req: VercelRequest, res: VercelResponse) => boolean {
+): (req: Request, res: Response, next: () => void) => void {
   const { windowMs, maxRequests } = { ...defaultConfig, ...config };
 
-  return (req: VercelRequest, res: VercelResponse): boolean => {
+  return (req: Request, res: Response, next: () => void): void => {
     const ip = getClientIp(req);
     const now = Date.now();
     const key = `rate_limit:${ip}`;
@@ -52,10 +52,15 @@ export function rateLimit(
     if (record.count > maxRequests) {
       const retryAfter = Math.ceil((record.resetTime - now) / 1000);
       res.setHeader('Retry-After', retryAfter);
-      return false;
+      res.status(429).json({
+        code: 429,
+        message: 'Too many requests, please try again later.',
+        data: { ip },
+      });
+      return;
     }
 
-    return true;
+    next();
   };
 }
 

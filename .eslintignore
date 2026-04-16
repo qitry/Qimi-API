@@ -1,6 +1,0 @@
-node_modules
-dist
-.vercel
-.yarn
-.env
-*.log

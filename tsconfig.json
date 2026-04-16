@@ -10,10 +10,9 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["lib/*"],
-      "@/api/*": ["api/*"]
+      "@/*": ["lib/*"]
     }
   },
-  "include": ["api/**/*", "lib/**/*", "types/**/*"],
+  "include": ["src/**/*", "lib/**/*", "types/**/*"],
   "exclude": ["node_modules", "dist"]
 }
