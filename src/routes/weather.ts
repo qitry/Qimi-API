@@ -12,11 +12,10 @@ export default async function weatherHandler(req: Request, res: Response): Promi
   let lon = longitude as string | undefined;
 
   if (!lat || !lon) {
-    const clientIp = ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
-    const ipStr = Array.isArray(clientIp) ? clientIp[0] : clientIp;
+    const queryIp = ip || req.ip;
     try {
       const ipRes = await axios.get(
-        `${IP_API_BASE_URL}${ipStr === '::1' || ipStr === '127.0.0.1' ? '' : ipStr}`,
+        `${IP_API_BASE_URL}${queryIp}`,
       );
       if (ipRes.data.status === 'success') {
         lat = ipRes.data.lat;

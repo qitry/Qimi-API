@@ -1,12 +1,7 @@
 import type { Request } from 'express';
 
 export function getClientIp(req: Request): string {
-  const forwarded = req.headers['x-forwarded-for'];
-  if (forwarded) {
-    const ips = Array.isArray(forwarded) ? forwarded[0] : forwarded;
-    return ips.split(',')[0].trim();
-  }
-  return req.socket.remoteAddress || 'unknown';
+  return req.ip || 'unknown';
 }
 
 export function parseQuery(value: unknown): string | undefined {

@@ -6,7 +6,9 @@ import { logger } from '../../lib/core/logger';
 const IP_API_BASE_URL = 'http://ip-api.com/json/';
 
 export default async function ipHandler(req: Request, res: Response): Promise<void> {
-  const { query = '', lang = 'zh-CN', ...rest } = req.query;
+  const { query: queryParam = '', lang = 'zh-CN', ...rest } = req.query;
+
+  const query = queryParam || req.ip;
 
   try {
     const response = await axios.get(`${IP_API_BASE_URL}${query}`, {
