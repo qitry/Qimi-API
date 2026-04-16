@@ -71,22 +71,6 @@ const options = {
                     },
                 },
             },
-            '/api/baidu': {
-                get: {
-                    summary: '百度热搜',
-                    responses: {
-                        '200': { description: '成功' },
-                    },
-                },
-            },
-            '/api/bilibili': {
-                get: {
-                    summary: 'B站热榜',
-                    responses: {
-                        '200': { description: '成功' },
-                    },
-                },
-            },
             '/api/history': {
                 get: {
                     summary: '历史上的今天',
@@ -114,7 +98,9 @@ const options = {
             },
             '/api/baidu-search': {
                 get: {
-                    summary: '百度搜索',
+                    summary: '百度搜索 (不稳定)',
+                    description: '⚠️ 此接口不稳定，可能随时失效',
+                    tags: ['unstable'],
                     parameters: [
                         {
                             name: 'q',
@@ -145,9 +131,65 @@ const options = {
                     },
                 },
             },
-            '/api/hot': {
+            '/api/hot/weibo': {
                 get: {
-                    summary: '综合热搜榜',
+                    summary: '微博热搜',
+                    responses: {
+                        '200': { description: '成功' },
+                    },
+                },
+            },
+            '/api/hot/baidu': {
+                get: {
+                    summary: '百度热搜',
+                    responses: {
+                        '200': { description: '成功' },
+                    },
+                },
+            },
+            '/api/hot/douyin': {
+                get: {
+                    summary: '抖音热搜',
+                    responses: {
+                        '200': { description: '成功' },
+                    },
+                },
+            },
+            '/api/hot/bilibili': {
+                get: {
+                    summary: 'B站热搜',
+                    responses: {
+                        '200': { description: '成功' },
+                    },
+                },
+            },
+            '/api/hot/zhihu': {
+                get: {
+                    summary: '知乎热搜',
+                    responses: {
+                        '200': { description: '成功' },
+                    },
+                },
+            },
+            '/api/hot/qqnews-hot': {
+                get: {
+                    summary: '腾讯新闻热榜',
+                    responses: {
+                        '200': { description: '成功' },
+                    },
+                },
+            },
+            '/api/hot/qqnews-curation': {
+                get: {
+                    summary: '腾讯新闻精选',
+                    responses: {
+                        '200': { description: '成功' },
+                    },
+                },
+            },
+            '/api/hot/news163-toutiao': {
+                get: {
+                    summary: '网易新闻头条',
                     responses: {
                         '200': { description: '成功' },
                     },

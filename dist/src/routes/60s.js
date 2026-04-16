@@ -11,7 +11,9 @@ const SIXTY_CACHE = {};
 const SIXTY_CACHE_DURATION = 60 * 60 * 1000;
 async function sixtyHandler(req, res) {
     const now = Date.now();
-    if (SIXTY_CACHE.data && SIXTY_CACHE.timestamp && now - SIXTY_CACHE.timestamp < SIXTY_CACHE_DURATION) {
+    if (SIXTY_CACHE.data &&
+        SIXTY_CACHE.timestamp &&
+        now - SIXTY_CACHE.timestamp < SIXTY_CACHE_DURATION) {
         res.status(200).json((0, response_1.success)(SIXTY_CACHE.data));
         return;
     }

@@ -2,83 +2,67 @@
 
 ## Commands
 
-- `yarn dev` - start development server with hot reload
-- `yarn start` - start production server
-- `yarn build` - compile TypeScript to JavaScript
-- `yarn test` - smoke-test all endpoints (requires server running)
-- `yarn typecheck` - type-check using TypeScript compiler
-- `yarn lint` - lint all files using ESLint
-- `yarn lint:fix` - auto-fix linting issues
-- `yarn format` - format code with Prettier
+| Command | Description |
+|---------|-------------|
+| `yarn dev` | Start dev server with hot reload (tsx watch) |
+| `yarn build` | Compile TypeScript to `dist/src/` |
+| `yarn start` | Run production server (`node dist/src/app.js`) |
+| `yarn typecheck` | Type-check with `tsc --noEmit` |
+| `yarn lint` | ESLint check |
+| `yarn lint:fix` | ESLint auto-fix |
+| `yarn format` | Prettier format |
+| `yarn test` | Run `test_apis.sh` (requires server running) |
 
 ## Project Structure
 
 ```
-qimiapi/
-├── src/
-│   ├── app.ts          # Express server entry point
-│   └── routes/         # API route handlers (one file per endpoint)
-│       ├── index.ts    # Route registration
-│       ├── weather.ts  # 天气查询
-│       ├── ip.ts       # IP 归属地查询
-│       ├── search.ts   # Bing 搜索
-│       ├── baidu.ts    # 百度热搜
-│       ├── bilibili.ts # B站热榜
-│       ├── history.ts  # 历史上的今天
-│       ├── suggest.ts  # 百度搜索建议
-│       ├── baidu-search.ts # 百度搜索
-│       ├── lunar.ts    # 农历黄历
-│       ├── 60s.ts      # 60秒读懂世界
-│       └── hot.ts      # 综合热搜榜
-├── lib/                # Core utilities (rate limit, logger, etc.)
-├── dist/               # Compiled JavaScript output
-├── types/              # TypeScript declaration files
-└── test_apis.sh       # API smoke test script
+src/
+├── app.ts              # Express entry point (port 3000)
+├── lib/swagger.ts      # OpenAPI spec definition
+└── routes/
+    ├── index.ts        # Route registration (all /api/*)
+    ├── weather.ts      # GET /api/weather
+    ├── ip.ts           # GET /api/ip
+    ├── search.ts       # GET /api/search (Bing)
+    ├── suggest.ts      # GET /api/suggest (百度建议)
+    ├── baidu-search.ts # GET /api/baidu-search
+    ├── history.ts      # GET /api/history
+    ├── lunar.ts        # GET /api/lunar
+    ├── 60s.ts          # GET /api/60s
+    └── hot-*.ts        # GET /api/hot/{weibo,baidu,douyin,bilibili,zhihu,qqnews-hot,qqnews-curation,news163-toutiao}
+
+lib/
+├── core/               # rateLimit, logger, error, env
+└── utils/              # response, helpers, hot
 ```
 
-## TypeScript
+## API Docs
 
-- Strict mode enabled
-- 2-space indentation, single quotes, semicolons
-- Custom type declarations in `types/` directory
+- Swagger UI: `/api-docs` (uses RapiDoc)
+- OpenAPI JSON: `/api/docs.json`
+- API endpoint list: `GET /api`
 
 ## Testing
 
-- Run `yarn dev` first, then `yarn test` in parallel
-- Test script: `bash test_apis.sh http://localhost:3000 --raw`
-- Add new endpoint tests to `test_apis.sh`
+```bash
+yarn dev &          # start server
+yarn test           # run smoke tests
+```
 
-## Upstream Dependencies
+## Rate Limiting
 
-- `/api/weather` → `api.open-meteo.com` + `ip-api.com` (IP 定位备用)
-- `/api/ip` → `ip-api.com`
-- `/api/search` → `cn.bing.com` (Bing RSS)
-- `/api/baidu-search` → `baidu.com` (百度搜索)
-- `/api/baidu` → `top.baidu.com` (百度热搜)
-- `/api/bilibili` → `api.bilibili.com` (B站热榜)
-- `/api/lunar` → `festival2.wifilu.com` + `api.suyanw.cn` + `lunar-javascript` (今日农历/节气/节日/星座运势/宜忌)
-- `/api/history` → `cdn.lylme.com` (历史上的今天)
-- `/api/60s` → `cdn.lylme.com` (60秒读懂世界)
-- `/api/hot` → `cdn.lylme.com` (多平台热搜榜)
+- 80 requests per hour per IP (configurable via env)
+
+## Hot Endpoints (all from `cdn.lylme.com`)
+
+`/api/hot/weibo`, `/api/hot/baidu`, `/api/hot/douyin`, `/api/hot/bilibili`, `/api/hot/zhihu`, `/api/hot/qqnews-hot`, `/api/hot/qqnews-curation`, `/api/hot/news163-toutiao`
 
 ## Environment Variables
 
-- `PORT` - 服务器端口 (默认: 3000)
-- `NODE_ENV` - 运行环境 (`development`/`production`)
-- `LOG_LEVEL` - 日志级别 (`debug`/`info`/`warn`/`error`)
+`PORT` (default 3000), `NODE_ENV`, `LOG_LEVEL` (debug/info/warn/error)
 
 ## PM2 Deployment
 
 ```bash
-# Build first
-yarn build
-
-# Start with PM2
-pm2 start dist/app.js --name qimiapi
-
-# Save PM2 process list
-pm2 save
-
-# Setup startup script
-pm2 startup
+yarn build && pm2 start dist/src/app.js --name qimiapi && pm2 save
 ```

@@ -17,38 +17,16 @@ const PORT = process.env.PORT || 3000;
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use((0, rateLimit_1.rateLimit)({ windowMs: 60 * 60 * 1000, maxRequests: 80 }));
-app.use('/rapidoc', express_1.default.static(path_1.default.join(__dirname, '../node_modules/rapidoc/dist')));
+app.use('/rapidoc', express_1.default.static(path_1.default.join(process.cwd(), 'node_modules/rapidoc/dist')));
 app.get('/api-docs', (_req, res) => {
     res.send(`<!DOCTYPE html>
 <html>
 <head>
-  <title>QimiAPI 文档</title>
-  <script type="module" src="/rapidoc/rapidoc.js"></script>
+  <title>QimiAPI</title>
+  <script type="module" src="/rapidoc/rapidoc-min.js"></script>
 </head>
 <body>
-  <rapi-doc 
-    spec-url="/api/docs.json"
-    theme="dark"
-    header-background="#1a1a2e"
-    nav-background="#16213e"
-    nav-accent-color="#e94560"
-    font-size="medium"
-    show-header="true"
-    show-info="true"
-    show-nav="true"
-    show-components="true"
-    show-tags="true"
-    allow-server-selection="false"
-    allow-authentication="false"
-    allow-try="true"
-    render-style="read"
-    fill-request-fields-with-example="true"
-  > 
-    <div slot="nav-logo" style="display:flex;align-items:center;padding:10px;">
-      <span style="font-size:1.5em;margin-right:10px;">📖</span>
-      <span style="font-size:1.2em;font-weight:bold;">QimiAPI</span>
-    </div>
-  </rapi-doc>
+  <rapi-doc spec-url="/api/docs.json" theme="dark" render-style="read" allow-try="true"></rapi-doc>
 </body>
 </html>`);
 });
@@ -57,24 +35,22 @@ app.get('/api/docs.json', (_req, res) => {
     res.send(swagger_1.swaggerSpec);
 });
 app.get('/api', (_req, res) => {
+    const endpoints = [];
+    if (swagger_1.swaggerSpec.paths) {
+        for (const [path, methods] of Object.entries(swagger_1.swaggerSpec.paths)) {
+            for (const [method, info] of Object.entries(methods)) {
+                if (method !== 'parameters') {
+                    endpoints.push(`${method.toUpperCase()} ${path} - ${info.summary || info.description || path}`);
+                }
+            }
+        }
+    }
     res.json((0, response_1.success)({
         name: 'QimiAPI',
         version: '1.0.0',
         description: '免费 API 服务集合',
         docs: '/api-docs',
-        endpoints: [
-            '/api/weather - 天气查询',
-            '/api/ip - IP 归属地查询',
-            '/api/search - Bing 搜索',
-            '/api/baidu - 百度热搜',
-            '/api/bilibili - B站热榜',
-            '/api/history - 历史上的今天',
-            '/api/suggest - 百度搜索建议',
-            '/api/baidu-search - 百度搜索',
-            '/api/lunar - 农历黄历',
-            '/api/60s - 60秒读懂世界',
-            '/api/hot - 综合热搜榜',
-        ],
+        endpoints,
     }));
 });
 (0, routes_1.registerRoutes)(app);

@@ -15,13 +15,17 @@ const LUNAR_CACHE_DURATION = 60 * 60 * 1000;
 async function lunarHandler(req, res) {
     const { date } = req.query;
     const now = Date.now();
-    if (LUNAR_CACHE.data && LUNAR_CACHE.timestamp && now - LUNAR_CACHE.timestamp < LUNAR_CACHE_DURATION) {
+    if (LUNAR_CACHE.data &&
+        LUNAR_CACHE.timestamp &&
+        now - LUNAR_CACHE.timestamp < LUNAR_CACHE_DURATION) {
         res.status(200).json((0, response_1.success)(LUNAR_CACHE.data));
         return;
     }
     try {
         const targetDate = date ? String(date) : undefined;
-        const festivalUrl = targetDate ? `${FESTIVAL_API}?date=${targetDate}&type=calendar` : `${FESTIVAL_API}?type=calendar`;
+        const festivalUrl = targetDate
+            ? `${FESTIVAL_API}?date=${targetDate}&type=calendar`
+            : `${FESTIVAL_API}?type=calendar`;
         const solar = (() => {
             if (targetDate) {
                 const parts = targetDate.split('-');
@@ -39,10 +43,18 @@ async function lunarHandler(req, res) {
         const fortune = fortuneRes.status === 'fulfilled' ? fortuneRes.value.data : null;
         const result = {
             date: solar.toString(),
-            solar: { year: solar.getYear(), month: solar.getMonth(), day: solar.getDay(), weekday: solar.getWeekInChinese() },
+            solar: {
+                year: solar.getYear(),
+                month: solar.getMonth(),
+                day: solar.getDay(),
+                weekday: solar.getWeekInChinese(),
+            },
             lunar: {
-                year: lunar.getYear(), month: lunar.getMonth(), day: lunar.getDay(),
-                monthName: lunar.getMonthInChinese(), dayName: lunar.getDayInChinese(),
+                year: lunar.getYear(),
+                month: lunar.getMonth(),
+                day: lunar.getDay(),
+                monthName: lunar.getMonthInChinese(),
+                dayName: lunar.getDayInChinese(),
                 yearShengXiao: lunar.getYearShengXiao(),
             },
             ganzhi: {

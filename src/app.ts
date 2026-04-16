@@ -16,14 +16,14 @@ app.use(express.json());
 
 app.use(rateLimit({ windowMs: 60 * 60 * 1000, maxRequests: 80 }));
 
-app.use('/rapidoc', express.static(path.join(__dirname, '../node_modules/rapidoc/dist')));
+app.use('/rapidoc', express.static(path.join(process.cwd(), 'node_modules/rapidoc/dist')));
 
 app.get('/api-docs', (_req: Request, res: Response) => {
   res.send(`<!DOCTYPE html>
 <html>
 <head>
   <title>QimiAPI</title>
-  <script type="module" src="/rapidoc/rapidoc.js"></script>
+  <script type="module" src="/rapidoc/rapidoc-min.js"></script>
 </head>
 <body>
   <rapi-doc spec-url="/api/docs.json" theme="dark" render-style="read" allow-try="true"></rapi-doc>

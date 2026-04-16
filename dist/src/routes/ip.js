@@ -15,7 +15,8 @@ async function ipHandler(req, res) {
             params: {
                 lang,
                 ...rest,
-                fields: rest.fields || 'status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query',
+                fields: rest.fields ||
+                    'status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query',
             },
         });
         if (response.data.status === 'fail') {

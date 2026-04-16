@@ -15,7 +15,7 @@ async function hotHandler(req, res) {
     if (HOT_CACHE.data && HOT_CACHE.timestamp && now - HOT_CACHE.timestamp < HOT_CACHE_DURATION) {
         const data = HOT_CACHE.data;
         if (type && typeof type === 'string') {
-            const filtered = data.filter((s) => s.alias === type);
+            const filtered = data.filter(s => s.alias === type);
             res.status(200).json(filtered.length > 0 ? (0, response_1.success)(filtered[0].data) : (0, response_1.success)(data));
             return;
         }

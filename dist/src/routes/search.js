@@ -43,8 +43,16 @@ const response_1 = require("../../lib/utils/response");
 const logger_1 = require("../../lib/core/logger");
 const helpers_1 = require("../../lib/utils/helpers");
 const LANG_TO_MKT = {
-    en: 'en-US', zh: 'zh-CN', ja: 'ja-JP', ko: 'ko-KR',
-    fr: 'fr-FR', de: 'de-DE', es: 'es-ES', pt: 'pt-BR', ru: 'ru-RU', ar: 'ar-XA',
+    en: 'en-US',
+    zh: 'zh-CN',
+    ja: 'ja-JP',
+    ko: 'ko-KR',
+    fr: 'fr-FR',
+    de: 'de-DE',
+    es: 'es-ES',
+    pt: 'pt-BR',
+    ru: 'ru-RU',
+    ar: 'ar-XA',
 };
 async function searchHandler(req, res) {
     const q = req.query.q?.trim();
