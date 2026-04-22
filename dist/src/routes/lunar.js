@@ -4,40 +4,39 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = lunarHandler;
-const axios_1 = __importDefault(require("axios"));
+const http_1 = __importDefault(require("../../lib/utils/http"));
 const lunar_javascript_1 = require("lunar-javascript");
 const response_1 = require("../../lib/utils/response");
 const logger_1 = require("../../lib/core/logger");
+const cache_1 = require("../../lib/utils/cache");
 const FESTIVAL_API = 'https://festival2.wifilu.com/';
 const FORTUNE_API = 'https://api.suyanw.cn/api/huangli.php';
-const LUNAR_CACHE = {};
-const LUNAR_CACHE_DURATION = 60 * 60 * 1000;
 async function lunarHandler(req, res) {
     const { date } = req.query;
-    const now = Date.now();
-    if (LUNAR_CACHE.data &&
-        LUNAR_CACHE.timestamp &&
-        now - LUNAR_CACHE.timestamp < LUNAR_CACHE_DURATION) {
-        res.status(200).json((0, response_1.success)(LUNAR_CACHE.data));
+    const targetDate = date
+        ? String(date)
+        : (() => {
+            const now = new Date();
+            return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+        })();
+    const cacheKey = `lunar:${targetDate}`;
+    const cached = cache_1.cache.get(cacheKey);
+    if (cached) {
+        res.status(200).json((0, response_1.success)(cached));
         return;
     }
     try {
-        const targetDate = date ? String(date) : undefined;
-        const festivalUrl = targetDate
-            ? `${FESTIVAL_API}?date=${targetDate}&type=calendar`
-            : `${FESTIVAL_API}?type=calendar`;
+        const festivalUrl = `${FESTIVAL_API}?date=${targetDate}&type=calendar`;
         const solar = (() => {
-            if (targetDate) {
-                const parts = targetDate.split('-');
-                if (parts.length === 3)
-                    return lunar_javascript_1.Solar.fromYmd(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]));
-            }
+            const parts = targetDate.split('-');
+            if (parts.length === 3)
+                return lunar_javascript_1.Solar.fromYmd(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]));
             return lunar_javascript_1.Solar.fromDate(new Date());
         })();
         const lunar = solar.getLunar();
         const [festivalRes, fortuneRes] = await Promise.allSettled([
-            axios_1.default.get(festivalUrl, { timeout: 10000 }),
-            axios_1.default.get(FORTUNE_API, { timeout: 10000 }),
+            http_1.default.get(festivalUrl),
+            http_1.default.get(FORTUNE_API),
         ]);
         const festival = festivalRes.status === 'fulfilled' ? festivalRes.value.data : null;
         const fortune = fortuneRes.status === 'fulfilled' ? fortuneRes.value.data : null;
@@ -74,8 +73,7 @@ async function lunarHandler(req, res) {
             },
             fortune: fortune?.星座运势 || null,
         };
-        LUNAR_CACHE.data = result;
-        LUNAR_CACHE.timestamp = now;
+        cache_1.cache.set(cacheKey, result, 60 * 60 * 1000);
         res.status(200).json((0, response_1.success)(result));
     }
     catch (err) {

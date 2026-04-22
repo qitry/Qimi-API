@@ -37,10 +37,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = baiduSearchHandler;
-const axios_1 = __importDefault(require("axios"));
+const http_1 = __importDefault(require("../../lib/utils/http"));
 const cheerio = __importStar(require("cheerio"));
 const response_1 = require("../../lib/utils/response");
 const logger_1 = require("../../lib/core/logger");
+const cache_1 = require("../../lib/utils/cache");
 const helpers_1 = require("../../lib/utils/helpers");
 const BAIDU_SEARCH_URL = 'https://www.baidu.com/s';
 async function baiduSearchHandler(req, res) {
@@ -50,8 +51,14 @@ async function baiduSearchHandler(req, res) {
         return;
     }
     const num = Math.min((0, helpers_1.parseInteger)(count, 10), 20);
+    const cacheKey = `baidu-search:${q}:${num}`;
+    const cached = cache_1.cache.get(cacheKey);
+    if (cached) {
+        res.status(200).json((0, response_1.success)(cached));
+        return;
+    }
     try {
-        const response = await axios_1.default.get(BAIDU_SEARCH_URL, {
+        const response = await http_1.default.get(BAIDU_SEARCH_URL, {
             params: { wd: q, rn: num, ie: 'utf-8', inputT: Math.floor(Date.now() / 1000) },
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
@@ -75,13 +82,15 @@ async function baiduSearchHandler(req, res) {
                 results.push({ title, link, description: description.substring(0, 300), date: '' });
             }
         });
-        res.status(200).json((0, response_1.success)({
+        const result = {
             query: q,
             results: results.slice(0, num),
             count: results.length,
             source: 'baidu',
             status: 'alpha',
-        }));
+        };
+        cache_1.cache.set(cacheKey, result, 10 * 60 * 1000);
+        res.status(200).json((0, response_1.success)(result));
     }
     catch (err) {
         logger_1.logger.error('Baidu search failed', err);

@@ -1,31 +1,26 @@
 import type { Request, Response } from 'express';
-import axios from 'axios';
+import httpClient from '../../lib/utils/http';
 import { success } from '../../lib/utils/response';
 import { logger } from '../../lib/core/logger';
+import { cache } from '../../lib/utils/cache';
 
-const SIXTY_CACHE: { data?: string[]; timestamp?: number } = {};
-const SIXTY_CACHE_DURATION = 60 * 60 * 1000;
+const SIXTY_API = 'https://cdn.lylme.com/api/60s/';
+const CACHE_TTL = 60 * 60 * 1000;
 
 export default async function sixtyHandler(req: Request, res: Response): Promise<void> {
-  const now = Date.now();
-
-  if (
-    SIXTY_CACHE.data &&
-    SIXTY_CACHE.timestamp &&
-    now - SIXTY_CACHE.timestamp < SIXTY_CACHE_DURATION
-  ) {
-    res.status(200).json(success(SIXTY_CACHE.data));
+  const cacheKey = '60s';
+  const cached = cache.get<string[]>(cacheKey);
+  if (cached) {
+    res.status(200).json(success(cached));
     return;
   }
 
   try {
-    const response = await axios.get('https://cdn.lylme.com/api/60s/', {
-      timeout: 10000,
+    const response = await httpClient.get(SIXTY_API, {
       headers: { 'User-Agent': 'qimiapi/1.0' },
     });
     if (response.data?.status === 200 && response.data?.data) {
-      SIXTY_CACHE.data = response.data.data;
-      SIXTY_CACHE.timestamp = now;
+      cache.set(cacheKey, response.data.data, CACHE_TTL);
       res.status(200).json(success(response.data.data));
       return;
     }
@@ -33,5 +28,6 @@ export default async function sixtyHandler(req: Request, res: Response): Promise
     logger.error('60s failed', err);
   }
 
-  res.status(200).json(success(SIXTY_CACHE.data || []));
+  const stale = cache.get<string[]>(cacheKey);
+  res.status(200).json(success(stale || []));
 }

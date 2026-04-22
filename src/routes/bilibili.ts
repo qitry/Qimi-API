@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import axios from 'axios';
+import httpClient from '../../lib/utils/http';
 import { success, error } from '../../lib/utils/response';
 import { logger } from '../../lib/core/logger';
 
@@ -7,9 +7,8 @@ const BILIBILI_API = 'https://api.bilibili.com/x/web-interface/ranking/v2';
 
 export default async function bilibiliHandler(req: Request, res: Response): Promise<void> {
   try {
-    const response = await axios.get(BILIBILI_API, {
+    const response = await httpClient.get(BILIBILI_API, {
       headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
-      timeout: 10000,
     });
     if (response.data.code !== 0) {
       res.status(200).json(error(500, 'Hot list unavailable', null));

@@ -37,10 +37,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = searchHandler;
-const axios_1 = __importDefault(require("axios"));
+const http_1 = __importDefault(require("../../lib/utils/http"));
 const cheerio = __importStar(require("cheerio"));
 const response_1 = require("../../lib/utils/response");
 const logger_1 = require("../../lib/core/logger");
+const cache_1 = require("../../lib/utils/cache");
 const helpers_1 = require("../../lib/utils/helpers");
 const LANG_TO_MKT = {
     en: 'en-US',
@@ -63,14 +64,19 @@ async function searchHandler(req, res) {
         res.status(200).json((0, response_1.error)(400, 'Missing required parameter: q', null));
         return;
     }
+    const cacheKey = `search:${q}:${mkt}`;
+    const cached = cache_1.cache.get(cacheKey);
+    if (cached) {
+        res.status(200).json((0, response_1.success)({ results: cached.results.slice(0, count), count: cached.count }));
+        return;
+    }
     try {
-        const response = await axios_1.default.get('https://www.bing.com/search', {
+        const response = await http_1.default.get('https://www.bing.com/search', {
             params: { q, count: Math.min(count, 15), mkt, format: 'rss' },
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
                 'Accept': 'application/rss+xml, application/xml, text/xml',
             },
-            timeout: 10000,
         });
         const $ = cheerio.load(response.data, { xmlMode: true });
         const items = [];
@@ -82,6 +88,8 @@ async function searchHandler(req, res) {
                 pubDate: $(el).find('pubDate').text(),
             });
         });
+        const result = { results: items, count: items.length };
+        cache_1.cache.set(cacheKey, result, 10 * 60 * 1000);
         res.status(200).json((0, response_1.success)({ results: items.slice(0, count), count: items.length }));
     }
     catch (err) {

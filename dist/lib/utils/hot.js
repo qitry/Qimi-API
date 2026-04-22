@@ -4,31 +4,40 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getPlatformData = getPlatformData;
-const axios_1 = __importDefault(require("axios"));
+exports.getAllHotData = getAllHotData;
 const logger_1 = require("../core/logger");
-const PLATFORM_CACHE = {};
-const CACHE_DURATION = 30 * 60 * 1000;
-async function getPlatformData(platform) {
-    const now = Date.now();
-    const cached = PLATFORM_CACHE[platform];
-    if (cached?.data && cached?.timestamp && now - cached.timestamp < CACHE_DURATION) {
-        return cached.data;
-    }
-    try {
-        const response = await axios_1.default.get('https://cdn.lylme.com/api/hot/', {
-            timeout: 10000,
+const cache_1 = require("./cache");
+const http_1 = __importDefault(require("./http"));
+const HOT_API = 'https://cdn.lylme.com/api/hot/';
+const CACHE_TTL = 30 * 60 * 1000;
+async function fetchAllHotData() {
+    return cache_1.cache.getOrSet('__hot_all', async () => {
+        const response = await http_1.default.get(HOT_API, {
             headers: { 'User-Agent': 'qimiapi/1.0' },
         });
         if (response.data?.code === 200 && response.data?.data) {
-            const platformData = response.data.data.find((p) => p.alias === platform);
-            if (platformData) {
-                PLATFORM_CACHE[platform] = { data: platformData.data, timestamp: now };
-                return platformData.data;
-            }
+            return response.data.data;
         }
+        return [];
+    }, CACHE_TTL);
+}
+async function getPlatformData(platform) {
+    try {
+        const allData = await fetchAllHotData();
+        const found = allData.find((p) => p.alias === platform);
+        return found ? found.data : null;
     }
     catch (err) {
         logger_1.logger.error(`Platform ${platform} failed`, err);
+        return null;
     }
-    return cached?.data || null;
+}
+async function getAllHotData() {
+    try {
+        return await fetchAllHotData();
+    }
+    catch (err) {
+        logger_1.logger.error('Hot fetch failed', err);
+        return [];
+    }
 }

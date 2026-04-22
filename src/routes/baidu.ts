@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import axios from 'axios';
+import httpClient from '../../lib/utils/http';
 import { success, error } from '../../lib/utils/response';
 import { logger } from '../../lib/core/logger';
 
@@ -7,7 +7,7 @@ const BAIDU_HOT_API = 'https://zj.v.api.aa1.cn/api/baidu-rs/';
 
 export default async function baiduHandler(req: Request, res: Response): Promise<void> {
   try {
-    const response = await axios.get(BAIDU_HOT_API, { timeout: 10000 });
+    const response = await httpClient.get(BAIDU_HOT_API);
     if (response.data.code !== 1) {
       res.status(200).json(error(500, 'Hot list unavailable', null));
       return;

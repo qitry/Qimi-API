@@ -2,16 +2,16 @@
 
 ## Commands
 
-| Command | Description |
-|---------|-------------|
-| `yarn dev` | Start dev server with hot reload (tsx watch) |
-| `yarn build` | Compile TypeScript to `dist/src/` |
-| `yarn start` | Run production server (`node dist/src/app.js`) |
-| `yarn typecheck` | Type-check with `tsc --noEmit` |
-| `yarn lint` | ESLint check |
-| `yarn lint:fix` | ESLint auto-fix |
-| `yarn format` | Prettier format |
-| `yarn test` | Run `test_apis.sh` (requires server running) |
+| Command          | Description                                    |
+| ---------------- | ---------------------------------------------- |
+| `yarn dev`       | Start dev server with hot reload (tsx watch)   |
+| `yarn build`     | Compile TypeScript to `dist/src/`              |
+| `yarn start`     | Run production server (`node dist/src/app.js`) |
+| `yarn typecheck` | Type-check with `tsc --noEmit`                 |
+| `yarn lint`      | ESLint check                                   |
+| `yarn lint:fix`  | ESLint auto-fix                                |
+| `yarn format`    | Prettier format                                |
+| `yarn test`      | Run `test_apis.sh` (requires server running)   |
 
 ## Project Structure
 

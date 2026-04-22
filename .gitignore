@@ -2,5 +2,8 @@ node_modules/
 .yarn/
 .vercel/
 .env
+.env.local
 *.log
 .DS_Store
+coverage/
+dist/

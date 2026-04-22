@@ -1,47 +1,43 @@
 import type { Request, Response } from 'express';
-import axios from 'axios';
+import httpClient from '../../lib/utils/http';
 import { Solar } from 'lunar-javascript';
 import { success, error } from '../../lib/utils/response';
 import { logger } from '../../lib/core/logger';
+import { cache } from '../../lib/utils/cache';
 
 const FESTIVAL_API = 'https://festival2.wifilu.com/';
 const FORTUNE_API = 'https://api.suyanw.cn/api/huangli.php';
 
-const LUNAR_CACHE: { data?: unknown; timestamp?: number } = {};
-const LUNAR_CACHE_DURATION = 60 * 60 * 1000;
-
 export default async function lunarHandler(req: Request, res: Response): Promise<void> {
   const { date } = req.query;
-  const now = Date.now();
+  const targetDate = date
+    ? String(date)
+    : (() => {
+        const now = new Date();
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+      })();
 
-  if (
-    LUNAR_CACHE.data &&
-    LUNAR_CACHE.timestamp &&
-    now - LUNAR_CACHE.timestamp < LUNAR_CACHE_DURATION
-  ) {
-    res.status(200).json(success(LUNAR_CACHE.data));
+  const cacheKey = `lunar:${targetDate}`;
+  const cached = cache.get<unknown>(cacheKey);
+  if (cached) {
+    res.status(200).json(success(cached));
     return;
   }
 
   try {
-    const targetDate = date ? String(date) : undefined;
-    const festivalUrl = targetDate
-      ? `${FESTIVAL_API}?date=${targetDate}&type=calendar`
-      : `${FESTIVAL_API}?type=calendar`;
+    const festivalUrl = `${FESTIVAL_API}?date=${targetDate}&type=calendar`;
 
     const solar = (() => {
-      if (targetDate) {
-        const parts = targetDate.split('-');
-        if (parts.length === 3)
-          return Solar.fromYmd(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]));
-      }
+      const parts = targetDate.split('-');
+      if (parts.length === 3)
+        return Solar.fromYmd(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]));
       return Solar.fromDate(new Date());
     })();
 
     const lunar = solar.getLunar();
     const [festivalRes, fortuneRes] = await Promise.allSettled([
-      axios.get(festivalUrl, { timeout: 10000 }),
-      axios.get(FORTUNE_API, { timeout: 10000 }),
+      httpClient.get(festivalUrl),
+      httpClient.get(FORTUNE_API),
     ]);
 
     const festival = festivalRes.status === 'fulfilled' ? festivalRes.value.data : null;
@@ -81,8 +77,7 @@ export default async function lunarHandler(req: Request, res: Response): Promise
       fortune: fortune?.星座运势 || null,
     };
 
-    LUNAR_CACHE.data = result;
-    LUNAR_CACHE.timestamp = now;
+    cache.set(cacheKey, result, 60 * 60 * 1000);
     res.status(200).json(success(result));
   } catch (err) {
     logger.error('Lunar failed', err);

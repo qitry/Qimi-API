@@ -4,15 +4,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = bilibiliHandler;
-const axios_1 = __importDefault(require("axios"));
+const http_1 = __importDefault(require("../../lib/utils/http"));
 const response_1 = require("../../lib/utils/response");
 const logger_1 = require("../../lib/core/logger");
 const BILIBILI_API = 'https://api.bilibili.com/x/web-interface/ranking/v2';
 async function bilibiliHandler(req, res) {
     try {
-        const response = await axios_1.default.get(BILIBILI_API, {
+        const response = await http_1.default.get(BILIBILI_API, {
             headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
-            timeout: 10000,
         });
         if (response.data.code !== 0) {
             res.status(200).json((0, response_1.error)(500, 'Hot list unavailable', null));

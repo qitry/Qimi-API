@@ -1,6 +1,8 @@
 import express, { Request, Response, NextFunction } from 'express';
 import path from 'path';
 import cors from 'cors';
+import compression from 'compression';
+import type { RequestHandler } from 'express';
 import { registerRoutes } from './routes';
 import { rateLimit } from '../lib/core/rateLimit';
 import { logger } from '../lib/core/logger';
@@ -13,14 +15,16 @@ const PORT = process.env.PORT || 3000;
 
 app.set('trust proxy', true);
 app.use(cors());
-app.use(express.json());
+app.use(compression() as unknown as RequestHandler);
+app.use(rateLimit({ windowMs: 60 * 60 * 1000, maxRequests: 80 }) as unknown as RequestHandler);
 
-app.use(rateLimit({ windowMs: 60 * 60 * 1000, maxRequests: 80 }));
-
-app.use('/rapidoc', express.static(path.join(process.cwd(), 'node_modules/rapidoc/dist')));
+app.use(
+  '/rapidoc',
+  express.static(path.join(process.cwd(), 'node_modules/rapidoc/dist'), { maxAge: '1d' }),
+);
 
 app.get('/api-docs', (_req: Request, res: Response) => {
-  res.send(`<!DOCTYPE html>
+  res.type('html').send(`<!DOCTYPE html>
 <html>
 <head>
   <title>QimiAPI</title>
@@ -33,6 +37,7 @@ app.get('/api-docs', (_req: Request, res: Response) => {
 });
 
 app.get('/api/docs.json', (_req: Request, res: Response) => {
+  res.setHeader('Cache-Control', 'public, max-age=300');
   res.setHeader('Content-Type', 'application/json');
   res.send(swaggerSpec);
 });
