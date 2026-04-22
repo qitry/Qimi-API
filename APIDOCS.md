@@ -49,6 +49,149 @@
 
 ---
 
+## Bing 每日壁纸 & 故事
+
+```
+GET /api/bing
+```
+
+获取 Bing 首页每日高清壁纸及背后的故事。
+
+### 参数
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| n | number | 否 | 返回数量，默认 1，最大 8 |
+| idx | number | 否 | 偏移天数，0=今天，默认 0 |
+
+### 响应示例
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "date": "20260422",
+    "images": [
+      {
+        "title": "行动的力量",
+        "copyright": "阿拉姆-佩德亚自然保护区，塔尔图县，爱沙尼亚 (© Sven Zacek/Nature Picture Library)",
+        "desc": "阿拉姆-佩德亚自然保护区，塔尔图县，爱沙尼亚...",
+        "url": "https://cn.bing.com/th?id=OHR.TartuEstonia_ZH-CN5477370206_1920x1080.jpg",
+        "url_base": "https://cn.bing.com/th?id=OHR.TartuEstonia_ZH-CN5477370206",
+        "enddate": "20260422"
+      }
+    ]
+  }
+}
+```
+
+### data 字段说明
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| title | string | 图片标题 |
+| copyright | string | 版权信息 |
+| desc | string | 故事描述 |
+| url | string | 图片完整 URL (1920x1080) |
+| url_base | string | 图片基础 URL，可拼接其他分辨率 |
+| enddate | string | 日期 (YYYYMMDD) |
+
+### 示例
+
+```
+GET /api/bing
+GET /api/bing?n=8&idx=0
+```
+
+---
+
+## 二维码生成
+
+```
+GET /api/qrcode
+```
+
+将文本或 URL 生成二维码图片，可直接用于 img 标签。
+
+### 参数
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| text | string | 是 | 需要编码的文本或 URL |
+| size | number | 否 | 图片尺寸，默认 300，最小 50，最大 1000 |
+| format | string | 否 | 输出格式，`png` 或 `svg`，默认 `png` |
+| margin | number | 否 | 边距，默认 4，最小 0，最大 50 |
+
+### 响应
+
+返回图片二进制数据（Content-Type: `image/png` 或 `image/svg+xml`）
+
+### 示例
+
+```
+GET /api/qrcode?text=https://example.com
+GET /api/qrcode?text=hello&size=400&format=png
+```
+
+---
+
+## 汇率转换
+
+```
+GET /api/exchange-rate
+```
+
+查询实时汇率并进行货币转换。
+
+### 参数
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| from | string | 否 | 源货币代码，默认 `USD` |
+| to | string | 否 | 目标货币代码，默认 `CNY` |
+| amount | number | 否 | 转换金额，默认 1 |
+
+支持常用货币：USD, CNY, EUR, GBP, JPY, KRW, HKD, TWD, SGD, AUD, CAD, CHF 等
+
+### 响应示例
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "from": "USD",
+    "to": "CNY",
+    "amount": 100,
+    "rate": 6.836376,
+    "result": 683.64,
+    "last_updated": "Wed, 22 Apr 2026 00:02:31 +0000"
+  }
+}
+```
+
+### data 字段说明
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| from | string | 源货币代码 |
+| to | string | 目标货币代码 |
+| amount | number | 原始金额 |
+| rate | number | 汇率 |
+| result | number | 转换结果 |
+| last_updated | string | 汇率更新时间 |
+
+### 示例
+
+```
+GET /api/exchange-rate
+GET /api/exchange-rate?from=EUR&to=CNY&amount=100
+GET /api/exchange-rate?from=USD&to=JPY
+```
+
+---
+
 ## 天气查询
 
 ```
@@ -494,6 +637,9 @@ GET /api/hot/zhihu
 
 | 接口 | 说明 | 必填参数 |
 |------|------|----------|
+| `GET /api/bing` | Bing 每日壁纸 & 故事 | 无 |
+| `GET /api/qrcode` | 二维码生成 | `text` |
+| `GET /api/exchange-rate` | 汇率转换 | 无 |
 | `GET /api/weather` | 天气查询 | 无（自动定位） |
 | `GET /api/ip` | IP 归属地查询 | 无（使用客户端 IP） |
 | `GET /api/search` | Bing 搜索 | `q` |

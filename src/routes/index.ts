@@ -8,6 +8,9 @@ import suggestHandler from './suggest';
 import baiduSearchHandler from './baidu-search';
 import lunarHandler from './lunar';
 import sixtyHandler from './60s';
+import bingHandler from './bing';
+import qrcodeHandler from './qrcode';
+import exchangeRateHandler from './exchange-rate';
 
 import weiboHotHandler from './hot-weibo';
 import baiduHotHandler from './hot-baidu';
@@ -27,6 +30,9 @@ export function registerRoutes(app: Express): void {
   app.get('/api/baidu-search', baiduSearchHandler);
   app.get('/api/lunar', lunarHandler);
   app.get('/api/60s', sixtyHandler);
+  app.get('/api/bing', bingHandler);
+  app.get('/api/qrcode', qrcodeHandler);
+  app.get('/api/exchange-rate', exchangeRateHandler);
 
   app.get('/api/hot/weibo', weiboHotHandler);
   app.get('/api/hot/baidu', baiduHotHandler);
