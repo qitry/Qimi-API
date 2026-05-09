@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QimiAPI - 所有接口测试</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#0d1117; color:#c9d1d9; padding:20px; }
+h1 { text-align:center; margin:20px 0; font-size:24px; color:#58a6ff; }
+.subtitle { text-align:center; margin-bottom:20px; font-size:13px; color:#8b949e; }
+.subtitle a { color:#58a6ff; }
+.stats { text-align:center; margin-bottom:20px; font-size:14px; color:#8b949e; position:sticky; top:0; background:#0d1117; padding:8px 0; z-index:10; border-bottom:1px solid #21262d; }
+.stats span { margin:0 8px; }
+.stats .ok { color:#3fb950; }
+.stats .fail { color:#f85149; }
+.stats .pending { color:#58a6ff; }
+.filters { text-align:center; margin-bottom:20px; }
+.filters input { background:#161b22; border:1px solid #30363d; color:#c9d1d9; padding:8px 12px; border-radius:6px; width:300px; max-width:90%; outline:none; font-size:13px; }
+.filters input:focus { border-color:#58a6ff; }
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(460px,1fr)); gap:12px; max-width:1600px; margin:0 auto; }
+.card { background:#161b22; border:1px solid #30363d; border-radius:8px; overflow:hidden; transition:border-color .2s; }
+.card:hover { border-color:#58a6ff; }
+.card-header { display:flex; align-items:center; gap:8px; padding:10px 14px; background:#1c2128; border-bottom:1px solid #30363d; flex-wrap:wrap; }
+.card-header .method { font-size:11px; font-weight:700; padding:2px 6px; border-radius:4px; color:#fff; background:#238636; flex-shrink:0; }
+.card-header .path { font-size:13px; font-family:'SF Mono',monospace; color:#58a6ff; flex:1; word-break:break-all; }
+.card-header .status { font-size:11px; padding:2px 8px; border-radius:10px; flex-shrink:0; }
+.card-header .status.ok { background:#1b4125; color:#3fb950; }
+.card-header .status.fail { background:#49242b; color:#f85149; }
+.card-header .status.pending { background:#1c3a5e; color:#58a6ff; }
+.card-body { padding:10px 14px; }
+.card-body .params { font-size:12px; color:#8b949e; margin-bottom:6px; }
+.card-body .params code { background:#0d1117; padding:1px 4px; border-radius:3px; color:#f0883e; font-size:11px; }
+.card-body pre { background:#0d1117; border:1px solid #21262d; border-radius:6px; padding:10px; font-size:11px; line-height:1.5; max-height:220px; overflow:auto; white-space:pre-wrap; word-break:break-all; color:#7ee787; margin:0; }
+.card-body .error-msg { color:#f85149; font-size:12px; }
+.card-body .loading { color:#8b949e; font-size:12px; font-style:italic; }
+.avatar-preview { display:inline-block; width:48px; height:48px; border-radius:6px; overflow:hidden; vertical-align:middle; margin-left:8px; border:1px solid #30363d; }
+.avatar-preview img { width:100%; height:100%; object-fit:cover; }
+</style>
+</head>
+<body>
+<h1>QimiAPI 接口测试面板</h1>
+<div class="subtitle"><a href="/api-docs">Swagger 文档</a> &middot; <a href="/api">API 列表</a></div>
+<div class="stats" id="stats">加载中...</div>
+<div class="filters"><input id="search" placeholder="搜索接口（路径/参数）..." oninput="filterCards()"></div>
+<div class="grid" id="grid"></div>
+<script>
+const APIS = [
+  { m:'GET', p:'/api/weather', q:'?latitude=39.9042&longitude=116.4074' },
+  { m:'GET', p:'/api/ip', q:'?query=8.8.8.8' },
+  { m:'GET', p:'/api/history', q:'?month=5&day=9' },
+  { m:'GET', p:'/api/lunar', q:'?date=2026-05-09' },
+  { m:'GET', p:'/api/60s', q:'' },
+  { m:'GET', p:'/api/bing', q:'?n=1' },
+  { m:'GET', p:'/api/exchange-rate', q:'?from=USD&to=CNY' },
+  { m:'GET', p:'/api/base64', q:'?action=encode&text=Hello World' },
+  { m:'GET', p:'/api/timestamp', q:'?timestamp=1710000000' },
+  { m:'GET', p:'/api/regex', q:'?preset=email&text=user@example.com' },
+  { m:'GET', p:'/api/unit', q:'?type=length&value=100&from=m&to=km' },
+  { m:'GET', p:'/api/password', q:'?length=16&uppercase=true&symbols=true' },
+  { m:'GET', p:'/api/color', q:'?color=ff5733&format=all' },
+  { m:'GET', p:'/api/ping', q:'?host=baidu.com&count=2' },
+  { m:'GET', p:'/api/dns', q:'?domain=example.com&type=A' },
+  { m:'GET', p:'/api/quote', q:'' },
+  { m:'GET', p:'/api/qrcode', q:'?text=https://github.com' },
+  { m:'GET', p:'/api/minecraft/player', q:'?username=Notch' },
+  { m:'GET', p:'/api/minecraft/names', q:'?uuid=069a79f444e94726a5befca90e38aaf5' },
+  { m:'GET', p:'/api/minecraft/skin', q:'?uuid=069a79f444e94726a5befca90e38aaf5' },
+  { m:'GET', p:'/api/hot/weibo', q:'' },
+  { m:'GET', p:'/api/hot/baidu', q:'' },
+  { m:'GET', p:'/api/hot/douyin', q:'' },
+  { m:'GET', p:'/api/hot/bilibili', q:'' },
+  { m:'GET', p:'/api/hot/zhihu', q:'' },
+  { m:'GET', p:'/api/hot/qqnews-hot', q:'' },
+  { m:'GET', p:'/api/hot/qqnews-curation', q:'' },
+  { m:'GET', p:'/api/hot/news163-toutiao', q:'' },
+  { m:'GET', p:'/api/avatar', q:'?seed=testuser&style=dicebear-avataaars' },
+  { m:'GET', p:'/api/abstract-avatar', q:'?seed=test@example.com' },
+];
+
+const grid = document.getElementById('grid');
+const stats = document.getElementById('stats');
+let totalOk = 0, totalFail = 0, totalDone = 0;
+
+function filterCards() {
+  var q = document.getElementById('search').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(function(c) {
+    c.style.display = c.dataset.search.indexOf(q) !== -1 ? '' : 'none';
+  });
+}
+
+function updateStats() {
+  var total = APIS.length;
+  stats.innerHTML = '总计: <b>' + total + '</b> &nbsp;|&nbsp; <span class="ok">成功: <b>' + totalOk + '</b></span> &nbsp;|&nbsp; <span class="fail">失败: <b>' + totalFail + '</b></span> &nbsp;|&nbsp; <span class="pending">进行中: <b>' + (total - totalOk - totalFail) + '</b></span>';
+}
+
+function createCard(api) {
+  var card = document.createElement('div');
+  card.className = 'card';
+  card.dataset.search = (api.p + ' ' + api.q).toLowerCase();
+  card.innerHTML =
+    '<div class="card-header">' +
+      '<span class="method">' + api.m + '</span>' +
+      '<span class="path">' + api.p + '</span>' +
+      '<span class="status pending">请求中...</span>' +
+    '</div>' +
+    '<div class="card-body">' +
+      '<div class="params">' + (api.q ? '<code>' + escapeHtml(api.q) + '</code>' : '<span style="color:#8b949e;">无参数</span>') + '</div>' +
+      '<div class="loading">发送请求...</div>' +
+    '</div>';
+  grid.appendChild(card);
+  return card;
+}
+
+function escapeHtml(s) {
+  var d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+async function callApi(api, card) {
+  var statusEl = card.querySelector('.status');
+  var bodyEl = card.querySelector('.card-body');
+  var url = api.p + api.q;
+
+  try {
+    var isImage = api.p === '/api/qrcode' || api.p === '/api/avatar' || api.p === '/api/abstract-avatar';
+    var reqUrl = isImage && api.q.indexOf('output=') === -1
+      ? url + (api.q ? '&output=image' : '?output=image')
+      : url;
+
+    var response = await fetch(reqUrl, { signal: AbortSignal.timeout(15000) });
+
+    statusEl.textContent = response.status;
+    statusEl.className = 'status ' + (response.status < 400 ? 'ok' : 'fail');
+
+    var ct = response.headers.get('content-type') || '';
+
+    if (ct.indexOf('image/') !== -1) {
+      var blob = await response.blob();
+      bodyEl.innerHTML =
+        '<div class="params"><code>' + escapeHtml(api.q || '(直接图片)') + '</code></div>' +
+        '<div style="display:flex;align-items:center;gap:10px;">' +
+          '<div class="avatar-preview"><img src="' + URL.createObjectURL(blob) + '" alt="preview"></div>' +
+          '<div style="font-size:11px;color:#8b949e;">' + ct + '<br>' + blob.size + ' bytes</div>' +
+        '</div>';
+
+      // Also fetch as JSON to show data
+      try {
+        var jsonResp = await fetch(url, { signal: AbortSignal.timeout(5000) });
+        var jsonData = await jsonResp.json();
+        var pre = document.createElement('pre');
+        pre.textContent = JSON.stringify(jsonData, null, 2);
+        bodyEl.appendChild(pre);
+      } catch(e) {}
+    } else {
+      var data = await response.json();
+      bodyEl.innerHTML =
+        '<div class="params"><code>' + escapeHtml(api.q || '(无参数)') + '</code></div>' +
+        '<pre>' + escapeHtml(JSON.stringify(data, null, 2)) + '</pre>';
+    }
+
+    if (response.status < 400) totalOk++; else totalFail++;
+  } catch (err) {
+    statusEl.textContent = 'ERR';
+    statusEl.className = 'status fail';
+    bodyEl.innerHTML =
+      '<div class="params"><code>' + escapeHtml(api.q || '(无参数)') + '</code></div>' +
+      '<div class="error-msg">请求失败: ' + err.message + '</div>';
+    totalFail++;
+  }
+
+  totalDone++;
+  updateStats();
+}
+
+APIS.forEach(function(api) {
+  var card = createCard(api);
+  callApi(api, card);
+});
+</script>
+</body>
+</html>
