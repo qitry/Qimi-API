@@ -633,19 +633,423 @@ GET /api/hot/zhihu
 
 ---
 
+## Minecraft 玩家 UUID 查询
+
+```
+GET /api/minecraft/player
+```
+
+通过玩家名查询 Mojang 正版 UUID。
+
+### 参数
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| username | string | 是 | 玩家名，1-16 字符，仅含字母数字下划线 |
+
+### 响应示例
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "uuid": "069a79f444e94726a5befca90e38aaf5",
+    "name": "Notch"
+  }
+}
+```
+
+### 示例
+
+```
+GET /api/minecraft/player?username=Notch
+GET /api/minecraft/player?username=Dinnerbone
+```
+
+---
+
+## Minecraft 玩家历史名称查询
+
+```
+GET /api/minecraft/names
+```
+
+通过 UUID 查询玩家的历史名称记录。
+
+### 参数
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| uuid | string | 是 | 玩家 UUID，带或不带连字符均可 |
+
+### 响应示例
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": [
+    { "name": "Notch", "changedToAt": null }
+  ]
+}
+```
+
+### data 字段说明
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| name | string | 玩家名 |
+| changedToAt | number/null | 修改时间戳（毫秒），null 表示当前名称 |
+
+### 示例
+
+```
+GET /api/minecraft/names?uuid=069a79f444e94726a5befca90e38aaf5
+GET /api/minecraft/names?uuid=069a79f4-44e9-4726-a5be-fca90e38aaf5
+```
+
+---
+
+## Minecraft 玩家皮肤/披风查询
+
+```
+GET /api/minecraft/skin
+```
+
+通过 UUID 获取玩家的皮肤和披风 URL。
+
+### 参数
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| uuid | string | 是 | 玩家 UUID，带或不带连字符均可 |
+
+### 响应示例
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "name": "Notch",
+    "uuid": "069a79f444e94726a5befca90e38aaf5",
+    "timestamp": 1778300588401,
+    "skin": {
+      "url": "http://textures.minecraft.net/texture/...",
+      "model": "default"
+    },
+    "cape": null
+  }
+}
+```
+
+### data 字段说明
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| name | string | 玩家名 |
+| uuid | string | 玩家 UUID |
+| timestamp | number/null | 皮肤更新时间戳 |
+| skin | object/null | 皮肤信息，null 表示无皮肤 |
+| skin.url | string | 皮肤图片 URL |
+| skin.model | string | 皮肤模型类型：`default`（经典）或 `slim`（纤细） |
+| cape | object/null | 披风信息，null 表示无披风 |
+| cape.url | string | 披风图片 URL |
+
+### 示例
+
+```
+GET /api/minecraft/skin?uuid=069a79f444e94726a5befca90e38aaf5
+```
+
+---
+
+## 随机头像生成
+
+```
+GET /api/avatar
+```
+
+根据种子字符串生成随机头像，支持多种风格。可通过参数切换不同风格的头像服务。
+
+### 参数
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| seed | string | 否 | 生成种子（名字、ID等），默认 `default` |
+| style | string | 否 | 头像风格，默认 `dicebear-avataaars` |
+| size | number | 否 | 尺寸(px)，默认 200，范围 50-1000 |
+| output | string | 否 | 输出类型，`json` 或 `image`，默认 `json` |
+
+### 支持风格
+
+| 风格 | 说明 |
+|------|------|
+| uiavatars | 文字头像，首字母+随机背景 |
+| dicebear-avataaars | 迪斯贝儿卡通人物 |
+| dicebear-initials | 首字母图标 |
+| dicebear-bottts | 机器人头像 |
+| robohash | 机器人/怪物头像 |
+
+### 响应（output=json）
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "url": "https://api.dicebear.com/7.x/avataaars/svg?seed=testuser&size=200",
+    "style": "dicebear-avataaars",
+    "size": 200,
+    "seed": "testuser"
+  }
+}
+```
+
+### 响应（output=image）
+
+直接返回图片二进制数据（Content-Type: `image/svg+xml` 或 `image/png`）。
+
+### 示例
+
+```
+GET /api/avatar?seed=张三&style=uiavatars
+GET /api/avatar?seed=testuser&style=robohash&size=300&output=image
+```
+
+---
+
+## 随机抽象头像生成
+
+```
+GET /api/abstract-avatar
+```
+
+基于种子哈希的纯算法生成随机抽象头像，类似 GitHub identicon 或 Gravatar 默认头像风格。无需依赖任何外部服务。
+
+### 参数
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| seed | string | 是 | 生成种子（邮箱、用户名、ID等），最长 64 字符 |
+| output | string | 否 | 输出类型，`json` 或 `image`，默认 `json` |
+
+### 响应（output=json）
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "svg": "<?xml version=\"1.0\"...>",
+    "seed": "test@example.com",
+    "colors": ["hsl(104, 74%, 44%)", "hsl(336, 74%, 46%)", "hsl(330, 66%, 46%)", "hsl(112, 66%, 52%)"]
+  }
+}
+```
+
+### 响应（output=image）
+
+直接返回 SVG 图片二进制数据（Content-Type: `image/svg+xml`）。
+
+### 说明
+
+- 使用确定性算法，**相同 seed 始终生成相同头像**
+- 在 5×5 网格中随机生成矩形、圆形、多边形等几何形状
+- 颜色和形状完全由 seed 的哈希值决定
+- 无需网络请求，即开即用
+
+### 示例
+
+```
+GET /api/abstract-avatar?seed=user@example.com
+GET /api/abstract-avatar?seed=github-username&output=image
+```
+
+---
+
+## 实用工具
+
+以下接口为各种开发常用工具，以文本或数据处理为主，所有接口均为 `GET` 请求。
+
+### Base64 编解码
+
+```
+GET /api/base64
+```
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| action | string | 是 | 操作类型，`encode` 或 `decode` |
+| text | string | 是 | 要处理的文本 |
+
+```
+GET /api/base64?action=encode&text=Hello World
+GET /api/base64?action=decode&text=SGVsbG8gV29ybGQ=
+```
+
+### 时间戳转换
+
+```
+GET /api/timestamp
+```
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| timestamp | string | 否 | 时间戳，不传则返回当前时间 |
+| format | string | 否 | 日期格式，默认 `YYYY-MM-DD HH:mm:ss` |
+
+```
+GET /api/timestamp
+GET /api/timestamp?timestamp=1710000000
+GET /api/timestamp?timestamp=1710000000&format=YYYY/MM/DD
+```
+
+### 正则表达式测试
+
+```
+GET /api/regex
+```
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| preset | string | 否 | 预设正则：`email`, `phone`, `url`, `idCard`, `ipv4`, `chinese`, `number`, `username`, `password` |
+| pattern | string | 否 | 自定义正则表达式 |
+| text | string | 否 | 要测试的文本 |
+
+```
+GET /api/regex?preset=email&text=user@example.com
+GET /api/regex?pattern=\\d+&text=abc123def456
+```
+
+### 单位换算
+
+```
+GET /api/unit
+```
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| type | string | 是 | 单位类型：`length`, `weight`, `temperature`, `data` |
+| value | number | 是 | 数值 |
+| from | string | 是 | 原单位 |
+| to | string | 是 | 目标单位 |
+
+```
+GET /api/unit?type=length&value=100&from=m&to=km
+GET /api/unit?type=weight&value=1&from=kg&to=lb
+GET /api/unit?type=temperature&value=30&from=c&to=f
+```
+
+### 密码生成器
+
+```
+GET /api/password
+```
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| length | number | 否 | 密码长度，默认 12，范围 4-128 |
+| uppercase | boolean | 否 | 包含大写字母，默认 true |
+| lowercase | boolean | 否 | 包含小写字母，默认 true |
+| numbers | boolean | 否 | 包含数字，默认 true |
+| symbols | boolean | 否 | 包含特殊字符，默认 true |
+
+```
+GET /api/password?length=16
+GET /api/password?length=32&symbols=false
+```
+
+### 颜色转换
+
+```
+GET /api/color
+```
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| color | string | 是 | 颜色值（HEX/RGB/HSL） |
+| format | string | 否 | 输出格式：`hex`, `rgb`, `hsl`, `all`，默认 `all` |
+
+```
+GET /api/color?color=ff5733
+GET /api/color?color=255,87,51&format=rgb
+```
+
+### Ping 检测
+
+```
+GET /api/ping
+```
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| host | string | 是 | 主机地址 |
+| count | number | 否 | ping 次数，默认 4，范围 1-10 |
+
+```
+GET /api/ping?host=baidu.com
+GET /api/ping?host=google.com&count=2
+```
+
+### DNS 解析
+
+```
+GET /api/dns
+```
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| domain | string | 是 | 域名 |
+| type | string | 否 | 记录类型，默认 `A`，可选 `A`, `AAAA`, `MX`, `TXT`, `CNAME` |
+
+```
+GET /api/dns?domain=example.com
+GET /api/dns?domain=example.com&type=MX
+```
+
+### 每日一言
+
+```
+GET /api/quote
+```
+
+无参数，返回随机一句励志或优美的话语。
+
+```
+GET /api/quote
+```
+
+---
+
 ## 接口总览
 
 | 接口 | 说明 | 必填参数 |
 |------|------|----------|
-| `GET /api/bing` | Bing 每日壁纸 & 故事 | 无 |
-| `GET /api/qrcode` | 二维码生成 | `text` |
-| `GET /api/exchange-rate` | 汇率转换 | 无 |
 | `GET /api/weather` | 天气查询 | 无（自动定位） |
 | `GET /api/ip` | IP 归属地查询 | 无（使用客户端 IP） |
-| `GET /api/search` | Bing 搜索 | `q` |
-| `GET /api/suggest` | 百度搜索建议 | `q` |
-| `GET /api/baidu-search` | 百度搜索（不稳定） | `q` |
 | `GET /api/history` | 历史上的今天 | 无（当天） |
 | `GET /api/lunar` | 农历黄历 | 无（当天） |
 | `GET /api/60s` | 60秒读懂世界 | 无 |
+| `GET /api/bing` | Bing 每日壁纸 & 故事 | 无 |
+| `GET /api/qrcode` | 二维码生成 | `text` |
+| `GET /api/exchange-rate` | 汇率转换 | 无 |
+| `GET /api/base64` | Base64 编解码 | `action`, `text` |
+| `GET /api/timestamp` | 时间戳转换 | 无 |
+| `GET /api/regex` | 正则表达式测试 | 无 |
+| `GET /api/unit` | 单位换算 | `type`, `value`, `from`, `to` |
+| `GET /api/password` | 密码生成器 | 无 |
+| `GET /api/color` | 颜色转换 | `color` |
+| `GET /api/ping` | Ping 检测 | `host` |
+| `GET /api/dns` | DNS 解析 | `domain` |
+| `GET /api/quote` | 每日一言 | 无 |
+| `GET /api/avatar` | 随机头像生成 | 无 |
+| `GET /api/abstract-avatar` | 随机抽象头像生成 | `seed` |
+| `GET /api/minecraft/player` | Minecraft 玩家 UUID 查询 | `username` |
+| `GET /api/minecraft/names` | Minecraft 玩家历史名称查询 | `uuid` |
+| `GET /api/minecraft/skin` | Minecraft 玩家皮肤查询 | `uuid` |
+| `GET /api/search` | Bing 搜索 | `q` |
+| `GET /api/suggest` | 百度搜索建议 | `q` |
+| `GET /api/baidu-search` | 百度搜索（不稳定） | `q` |
 | `GET /api/hot/{platform}` | 热搜榜单 | 无 |
