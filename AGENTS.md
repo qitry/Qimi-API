@@ -50,6 +50,7 @@ history_today/          # Static JSON files for historical events (01-12.json)
 - Swagger UI: `/api-docs` (uses RapiDoc)
 - OpenAPI JSON: `/api/docs.json`
 - API endpoint list: `GET /api`
+- API 测试面板: `/test` (交互式调用所有接口)
 
 ## Development Workflow
 
