@@ -63,28 +63,6 @@ print_ip() {
     fi
 }
 
-print_search() {
-    local body=$1
-    if [[ "$HAS_JQ" == "true" && "$FORMAT_MODE" == "pretty" ]]; then
-        local count=$(echo "$body" | jq -r '.data.count // 0')
-        echo "  共 ${count} 条结果:"
-        echo "$body" | jq -r '.data.results[]? | "  - \(.title)"' | head -10
-    else
-        echo "$body" | jq .
-    fi
-}
-
-print_list() {
-    local body=$1
-    local title=$2
-    if [[ "$HAS_JQ" == "true" && "$FORMAT_MODE" == "pretty" ]]; then
-        echo "  $title:"
-        echo "$body" | jq -r '.[:10][] | "  \(.index // .rank // ""). \(.title // .word // empty)"' 2>/dev/null | head -10
-    else
-        echo "$body" | jq .
-    fi
-}
-
 print_history() {
     local body=$1
     if [[ "$HAS_JQ" == "true" && "$FORMAT_MODE" == "pretty" ]]; then
@@ -125,6 +103,17 @@ print_60s() {
     fi
 }
 
+print_list() {
+    local body=$1
+    local title=$2
+    if [[ "$HAS_JQ" == "true" && "$FORMAT_MODE" == "pretty" ]]; then
+        echo "  $title:"
+        echo "$body" | jq -r '.[:10][] | "  \(.index // .rank // ""). \(.title // .word // empty)"' 2>/dev/null | head -10
+    else
+        echo "$body" | jq .
+    fi
+}
+
 print_hot() {
     local body=$1
     if [[ "$HAS_JQ" == "true" && "$FORMAT_MODE" == "pretty" ]]; then
@@ -136,16 +125,118 @@ print_hot() {
     fi
 }
 
-print_suggest() {
+print_base64() {
     local body=$1
     if [[ "$HAS_JQ" == "true" && "$FORMAT_MODE" == "pretty" ]]; then
-        local suggestions=$(echo "$body" | jq -r '.data.suggestions[]?')
-        if [[ -n "$suggestions" ]]; then
-            echo "  建议词:"
-            echo "$body" | jq -r '.data.suggestions[]? | "  - \(.)"'
-        else
-            echo "  无建议"
-        fi
+        echo "  结果: $(echo "$body" | jq -r '.data // empty')"
+    else
+        echo "$body" | jq .
+    fi
+}
+
+print_timestamp() {
+    local body=$1
+    if [[ "$HAS_JQ" == "true" && "$FORMAT_MODE" == "pretty" ]]; then
+        echo "  结果: $(echo "$body" | jq -r '.data // empty')"
+    else
+        echo "$body" | jq .
+    fi
+}
+
+print_regex() {
+    local body=$1
+    if [[ "$HAS_JQ" == "true" && "$FORMAT_MODE" == "pretty" ]]; then
+        local description=$(echo "$body" | jq -r '.data.description // empty')
+        local isValid=$(echo "$body" | jq -r '.data.isValid // empty')
+        local matchCount=$(echo "$body" | jq -r '.data.matchCount // 0')
+        echo "  描述: ${description}"
+        echo "  匹配: ${isValid}"
+        echo "  匹配数量: ${matchCount}"
+    else
+        echo "$body" | jq .
+    fi
+}
+
+print_unit() {
+    local body=$1
+    if [[ "$HAS_JQ" == "true" && "$FORMAT_MODE" == "pretty" ]]; then
+        local from=$(echo "$body" | jq -r '.data.from // empty')
+        local to=$(echo "$body" | jq -r '.data.to // empty')
+        echo "  原始: ${from}"
+        echo "  结果: ${to}"
+    else
+        echo "$body" | jq .
+    fi
+}
+
+print_password() {
+    local body=$1
+    if [[ "$HAS_JQ" == "true" && "$FORMAT_MODE" == "pretty" ]]; then
+        local password=$(echo "$body" | jq -r '.data.password // empty')
+        local strength=$(echo "$body" | jq -r '.data.strength // empty')
+        local length=$(echo "$body" | jq -r '.data.length // empty')
+        echo "  密码: ${password}"
+        echo "  强度: ${strength}"
+        echo "  长度: ${length}"
+    else
+        echo "$body" | jq .
+    fi
+}
+
+print_color() {
+    local body=$1
+    if [[ "$HAS_JQ" == "true" && "$FORMAT_MODE" == "pretty" ]]; then
+        local hex=$(echo "$body" | jq -r '.data.hex // empty')
+        local rgb=$(echo "$body" | jq -r '.data.rgb // empty')
+        local hsl=$(echo "$body" | jq -r '.data.hsl // empty')
+        echo "  HEX: ${hex}"
+        echo "  RGB: ${rgb}"
+        echo "  HSL: ${hsl}"
+    else
+        echo "$body" | jq .
+    fi
+}
+
+print_ping() {
+    local body=$1
+    if [[ "$HAS_JQ" == "true" && "$FORMAT_MODE" == "pretty" ]]; then
+        local host=$(echo "$body" | jq -r '.data.host // empty')
+        local transmitted=$(echo "$body" | jq -r '.data.transmitted // 0')
+        local received=$(echo "$body" | jq -r '.data.received // 0')
+        local loss=$(echo "$body" | jq -r '.data.loss // empty')
+        local avg=$(echo "$body" | jq -r '.data.statistics.avg // empty')
+        echo "  主机: ${host}"
+        echo "  发送/接收: ${transmitted}/${received}"
+        echo "  丢包率: ${loss}"
+        echo "  平均延迟: ${avg}"
+    else
+        echo "$body" | jq .
+    fi
+}
+
+print_dns() {
+    local body=$1
+    if [[ "$HAS_JQ" == "true" && "$FORMAT_MODE" == "pretty" ]]; then
+        local domain=$(echo "$body" | jq -r '.data.domain // empty')
+        local type=$(echo "$body" | jq -r '.data.type // empty')
+        local count=$(echo "$body" | jq -r '.data.count // 0')
+        echo "  域名: ${domain}"
+        echo "  类型: ${type}"
+        echo "  记录数: ${count}"
+        echo "$body" | jq -r '.data.records[]? | "  - \(.)"' | head -3
+    else
+        echo "$body" | jq .
+    fi
+}
+
+print_quote() {
+    local body=$1
+    if [[ "$HAS_JQ" == "true" && "$FORMAT_MODE" == "pretty" ]]; then
+        local quote=$(echo "$body" | jq -r '.data.quote // empty')
+        local index=$(echo "$body" | jq -r '.data.index // 0')
+        local total=$(echo "$body" | jq -r '.data.total // 0')
+        echo "  一言: ${quote}"
+        echo "  索引: ${index}/${total}"
     else
         echo "$body" | jq .
     fi
@@ -177,13 +268,20 @@ test_endpoint() {
             "api_list") print_api_list "$body" ;;
             "weather") print_weather "$body" ;;
             "ip") print_ip "$body" ;;
-            "search") print_search "$body" ;;
             "hot_list") print_list "$body" "热搜" ;;
             "history") print_history "$body" ;;
             "lunar") print_lunar "$body" ;;
             "60s") print_60s "$body" ;;
             "hot") print_hot "$body" ;;
-            "suggest") print_suggest "$body" ;;
+            "base64") print_base64 "$body" ;;
+            "timestamp") print_timestamp "$body" ;;
+            "regex") print_regex "$body" ;;
+            "unit") print_unit "$body" ;;
+            "password") print_password "$body" ;;
+            "color") print_color "$body" ;;
+            "ping") print_ping "$body" ;;
+            "dns") print_dns "$body" ;;
+            "quote") print_quote "$body" ;;
             *) echo "$body" | jq . 2>/dev/null || echo "$body" ;;
         esac
     fi
@@ -196,11 +294,7 @@ test_endpoint "天气 (自动定位)" "/api/weather" "weather"
 test_endpoint "天气 (上海)" "/api/weather?latitude=31.23&longitude=121.47" "weather"
 test_endpoint "IP 定位" "/api/ip" "ip"
 test_endpoint "IP 定位 (指定IP)" "/api/ip?query=8.8.8.8" "ip"
-test_endpoint "Bing 搜索" "/api/search?q=javascript&count=5" "search"
-test_endpoint "B站热榜" "/api/bilibili" "hot_list"
 test_endpoint "历史上的今天" "/api/history?month=10&day=01" "history"
-test_endpoint "百度搜索建议" "/api/suggest?q=javascript" "suggest"
-test_endpoint "百度搜索" "/api/baidu-search?q=javascript" "search"
 test_endpoint "农历黄历" "/api/lunar" "lunar"
 test_endpoint "60秒读懂世界" "/api/60s" "60s"
 test_endpoint "微博热搜" "/api/hot/weibo" "hot_list"
@@ -211,5 +305,17 @@ test_endpoint "知乎热搜" "/api/hot/zhihu" "hot_list"
 test_endpoint "腾讯新闻热榜" "/api/hot/qqnews-hot" "hot_list"
 test_endpoint "腾讯新闻精选" "/api/hot/qqnews-curation" "hot_list"
 test_endpoint "网易新闻头条" "/api/hot/news163-toutiao" "hot_list"
+test_endpoint "Base64 编码" "/api/base64?action=encode&text=Hello" "base64"
+test_endpoint "Base64 解码" "/api/base64?action=decode&text=SGVsbG8=" "base64"
+test_endpoint "时间戳 (当前)" "/api/timestamp" "timestamp"
+test_endpoint "时间戳 (格式化)" "/api/timestamp?timestamp=1625097600&format=YYYY-MM-DD" "timestamp"
+test_endpoint "正则测试 (邮箱)" "/api/regex?preset=email&text=test@example.com" "regex"
+test_endpoint "单位换算 (温度)" "/api/unit?type=temperature&value=100&from=c&to=f" "unit"
+test_endpoint "密码生成" "/api/password?length=16&uppercase=true&lowercase=true&numbers=true&symbols=true" "password"
+test_endpoint "颜色转换 (HEX转RGB)" "/api/color?color=%23ff0000&format=all" "color"
+test_endpoint "颜色转换 (RGB转HSL)" "/api/color?color=rgb(255,0,0)&format=hsl" "color"
+test_endpoint "Ping 检测" "/api/ping?host=8.8.8.8&count=2" "ping"
+test_endpoint "DNS 解析" "/api/dns?domain=example.com&type=A" "dns"
+test_endpoint "每日一言" "/api/quote" "quote"
 
 echo -e "\n${GREEN}测试完毕${NC}"

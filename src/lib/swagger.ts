@@ -79,12 +79,14 @@ const options: swaggerJsdoc.Options = {
     tags: [
       { name: '天气', description: '天气查询' },
       { name: 'IP', description: 'IP 归属地查询' },
-      { name: '搜索', description: '搜索引擎接口' },
       { name: '日历', description: '日历/农历相关' },
       { name: '资讯', description: '新闻资讯' },
       { name: '热榜', description: '各平台热搜热榜' },
       { name: '壁纸', description: 'Bing 每日壁纸' },
       { name: '工具', description: '实用工具' },
+      { name: '文本处理', description: '文本编解码和转换' },
+      { name: '网络工具', description: '网络检测和诊断' },
+      { name: '娱乐', description: '娱乐和励志内容' },
     ],
     components: {
       schemas: {
@@ -137,48 +139,6 @@ const options: swaggerJsdoc.Options = {
             org: { type: 'string' },
             as: { type: 'string' },
             query: { type: 'string' },
-          },
-        },
-        SearchResult: {
-          type: 'object',
-          properties: {
-            title: { type: 'string' },
-            link: { type: 'string' },
-            description: { type: 'string' },
-            pubDate: { type: 'string' },
-          },
-        },
-        SearchData: {
-          type: 'object',
-          properties: {
-            results: { type: 'array', items: { $ref: '#/components/schemas/SearchResult' } },
-            count: { type: 'integer' },
-          },
-        },
-        BaiduSearchResult: {
-          type: 'object',
-          properties: {
-            title: { type: 'string' },
-            link: { type: 'string' },
-            description: { type: 'string' },
-            date: { type: 'string' },
-          },
-        },
-        BaiduSearchData: {
-          type: 'object',
-          properties: {
-            query: { type: 'string' },
-            results: { type: 'array', items: { $ref: '#/components/schemas/BaiduSearchResult' } },
-            count: { type: 'integer' },
-            source: { type: 'string' },
-            status: { type: 'string' },
-          },
-        },
-        SuggestData: {
-          type: 'object',
-          properties: {
-            query: { type: 'string' },
-            suggestions: { type: 'array', items: { type: 'string' } },
           },
         },
         LunarSolar: {
@@ -287,6 +247,87 @@ const options: swaggerJsdoc.Options = {
             hot: { type: 'string' },
           },
         },
+        RegexResult: {
+          type: 'object',
+          properties: {
+            pattern: { type: 'string', description: '正则表达式' },
+            description: { type: 'string', description: '描述' },
+            text: { type: 'string', description: '测试文本' },
+            isValid: { type: 'boolean', description: '是否匹配' },
+            matches: { type: 'array', items: { type: 'string' }, description: '匹配结果' },
+            matchCount: { type: 'integer', description: '匹配数量' },
+          },
+        },
+        UnitResult: {
+          type: 'object',
+          properties: {
+            value: { type: 'number', description: '原始值' },
+            from: { type: 'string', description: '原始值和单位' },
+            to: { type: 'string', description: '转换结果' },
+            result: { type: 'number', description: '转换数值' },
+            unit: { type: 'string', description: '目标单位' },
+          },
+        },
+        PasswordResult: {
+          type: 'object',
+          properties: {
+            password: { type: 'string', description: '生成的密码' },
+            length: { type: 'integer', description: '密码长度' },
+            strength: { type: 'string', description: '密码强度' },
+            options: {
+              type: 'object',
+              properties: {
+                uppercase: { type: 'boolean' },
+                lowercase: { type: 'boolean' },
+                numbers: { type: 'boolean' },
+                symbols: { type: 'boolean' },
+              },
+            },
+          },
+        },
+        ColorResult: {
+          type: 'object',
+          properties: {
+            hex: { type: 'string', description: 'HEX 格式' },
+            rgb: { type: 'string', description: 'RGB 格式' },
+            hsl: { type: 'string', description: 'HSL 格式' },
+          },
+        },
+        PingResult: {
+          type: 'object',
+          properties: {
+            host: { type: 'string', description: '主机地址' },
+            transmitted: { type: 'integer', description: '发送包数' },
+            received: { type: 'integer', description: '接收包数' },
+            loss: { type: 'string', description: '丢包率' },
+            statistics: {
+              type: 'object',
+              properties: {
+                min: { type: 'string', description: '最小延迟' },
+                avg: { type: 'string', description: '平均延迟' },
+                max: { type: 'string', description: '最大延迟' },
+              },
+            },
+          },
+        },
+        DnsResult: {
+          type: 'object',
+          properties: {
+            domain: { type: 'string', description: '域名' },
+            type: { type: 'string', description: '记录类型' },
+            records: { type: 'array', items: { type: 'string' }, description: 'DNS 记录' },
+            count: { type: 'integer', description: '记录数量' },
+          },
+        },
+        QuoteResult: {
+          type: 'object',
+          properties: {
+            quote: { type: 'string', description: '一言内容' },
+            index: { type: 'integer', description: '索引' },
+            total: { type: 'integer', description: '总数量' },
+            date: { type: 'string', description: '日期' },
+          },
+        },
       },
     },
     paths: {
@@ -314,42 +355,6 @@ const options: swaggerJsdoc.Options = {
             { name: 'fields', in: 'query', required: false, schema: { type: 'string' }, description: '返回字段' },
           ],
           responses: { ...ApiResponse('IpData'), ...ApiErrorResponse() },
-        },
-      },
-      '/api/search': {
-        get: {
-          tags: ['搜索'],
-          summary: 'Bing 搜索',
-          description: '通过Bing搜索引擎获取搜索结果',
-          parameters: [
-            { name: 'q', in: 'query', required: true, schema: { type: 'string' }, description: '搜索关键词' },
-            { name: 'count', in: 'query', required: false, schema: { type: 'integer', default: 10, maximum: 50 }, description: '返回结果数量' },
-            { name: 'lang', in: 'query', required: false, schema: { type: 'string', default: 'zh', enum: ['en', 'zh', 'ja', 'ko', 'fr', 'de', 'es', 'pt', 'ru', 'ar'] }, description: '搜索语言' },
-          ],
-          responses: { ...ApiResponse('SearchData'), ...ApiErrorResponse() },
-        },
-      },
-      '/api/baidu-search': {
-        get: {
-          tags: ['搜索'],
-          summary: '百度搜索 (不稳定)',
-          description: '通过百度搜索获取结果，可能触发安全验证导致失败',
-          parameters: [
-            { name: 'q', in: 'query', required: true, schema: { type: 'string' }, description: '搜索关键词' },
-            { name: 'count', in: 'query', required: false, schema: { type: 'integer', default: 10, maximum: 20 }, description: '返回结果数量' },
-          ],
-          responses: { ...ApiResponse('BaiduSearchData'), ...ApiErrorResponse() },
-        },
-      },
-      '/api/suggest': {
-        get: {
-          tags: ['搜索'],
-          summary: '百度搜索建议',
-          description: '获取百度搜索自动补全建议',
-          parameters: [
-            { name: 'q', in: 'query', required: true, schema: { type: 'string' }, description: '搜索关键词前缀' },
-          ],
-          responses: { ...ApiResponse('SuggestData'), ...ApiErrorResponse() },
         },
       },
       '/api/lunar': {
@@ -458,6 +463,116 @@ const options: swaggerJsdoc.Options = {
       '/api/hot/qqnews-hot': { get: { tags: ['热榜'], summary: '腾讯新闻热榜', responses: hotListResponse } },
       '/api/hot/qqnews-curation': { get: { tags: ['热榜'], summary: '腾讯新闻精选', responses: hotListResponse } },
       '/api/hot/news163-toutiao': { get: { tags: ['热榜'], summary: '网易新闻头条', responses: hotListResponse } },
+      '/api/base64': {
+        get: {
+          tags: ['文本处理'],
+          summary: 'Base64 编解码',
+          description: '对文本进行 Base64 编码或解码',
+          parameters: [
+            { name: 'action', in: 'query', required: true, schema: { type: 'string', enum: ['encode', 'decode'] }, description: '操作类型' },
+            { name: 'text', in: 'query', required: true, schema: { type: 'string' }, description: '要处理的文本' },
+          ],
+          responses: { ...ApiResponse('string'), ...ApiErrorResponse() },
+        },
+      },
+      '/api/timestamp': {
+        get: {
+          tags: ['工具'],
+          summary: '时间戳转换',
+          description: '时间戳与日期格式互转',
+          parameters: [
+            { name: 'timestamp', in: 'query', required: false, schema: { type: 'string' }, description: '时间戳，不传则返回当前时间戳' },
+            { name: 'format', in: 'query', required: false, schema: { type: 'string', default: 'YYYY-MM-DD HH:mm:ss' }, description: '日期格式' },
+          ],
+          responses: { ...ApiResponse('string'), ...ApiErrorResponse() },
+        },
+      },
+      '/api/regex': {
+        get: {
+          tags: ['文本处理'],
+          summary: '正则表达式测试',
+          description: '测试正则表达式匹配，支持常用预设',
+          parameters: [
+            { name: 'preset', in: 'query', required: false, schema: { type: 'string', enum: ['email', 'phone', 'url', 'idCard', 'ipv4', 'chinese', 'number', 'username', 'password'] }, description: '预设正则' },
+            { name: 'pattern', in: 'query', required: false, schema: { type: 'string' }, description: '自定义正则表达式' },
+            { name: 'text', in: 'query', required: false, schema: { type: 'string' }, description: '要测试的文本' },
+          ],
+          responses: { ...ApiResponse('RegexResult'), ...ApiErrorResponse() },
+        },
+      },
+      '/api/unit': {
+        get: {
+          tags: ['工具'],
+          summary: '单位换算',
+          description: '长度、重量、温度、数据存储单位换算',
+          parameters: [
+            { name: 'type', in: 'query', required: true, schema: { type: 'string', enum: ['length', 'weight', 'temperature', 'data'] }, description: '单位类型' },
+            { name: 'value', in: 'query', required: true, schema: { type: 'number' }, description: '数值' },
+            { name: 'from', in: 'query', required: true, schema: { type: 'string' }, description: '原单位' },
+            { name: 'to', in: 'query', required: true, schema: { type: 'string' }, description: '目标单位' },
+          ],
+          responses: { ...ApiResponse('UnitResult'), ...ApiErrorResponse() },
+        },
+      },
+      '/api/password': {
+        get: {
+          tags: ['工具'],
+          summary: '密码生成器',
+          description: '生成随机密码，可配置字符类型和长度',
+          parameters: [
+            { name: 'length', in: 'query', required: false, schema: { type: 'integer', minimum: 4, maximum: 128, default: 12 }, description: '密码长度' },
+            { name: 'uppercase', in: 'query', required: false, schema: { type: 'boolean', default: true }, description: '包含大写字母' },
+            { name: 'lowercase', in: 'query', required: false, schema: { type: 'boolean', default: true }, description: '包含小写字母' },
+            { name: 'numbers', in: 'query', required: false, schema: { type: 'boolean', default: true }, description: '包含数字' },
+            { name: 'symbols', in: 'query', required: false, schema: { type: 'boolean', default: true }, description: '包含特殊字符' },
+          ],
+          responses: { ...ApiResponse('PasswordResult'), ...ApiErrorResponse() },
+        },
+      },
+      '/api/color': {
+        get: {
+          tags: ['工具'],
+          summary: '颜色转换',
+          description: 'HEX/RGB/HSL 颜色格式互转',
+          parameters: [
+            { name: 'color', in: 'query', required: true, schema: { type: 'string' }, description: '颜色值' },
+            { name: 'format', in: 'query', required: false, schema: { type: 'string', enum: ['hex', 'rgb', 'hsl', 'all'], default: 'all' }, description: '输出格式' },
+          ],
+          responses: { ...ApiResponse('ColorResult'), ...ApiErrorResponse() },
+        },
+      },
+      '/api/ping': {
+        get: {
+          tags: ['网络工具'],
+          summary: 'Ping 检测',
+          description: '检测主机连通性和延迟',
+          parameters: [
+            { name: 'host', in: 'query', required: true, schema: { type: 'string' }, description: '主机地址' },
+            { name: 'count', in: 'query', required: false, schema: { type: 'integer', minimum: 1, maximum: 10, default: 4 }, description: 'ping 次数' },
+          ],
+          responses: { ...ApiResponse('PingResult'), ...ApiErrorResponse() },
+        },
+      },
+      '/api/dns': {
+        get: {
+          tags: ['网络工具'],
+          summary: 'DNS 解析',
+          description: '查询域名 DNS 记录',
+          parameters: [
+            { name: 'domain', in: 'query', required: true, schema: { type: 'string' }, description: '域名' },
+            { name: 'type', in: 'query', required: false, schema: { type: 'string', default: 'A' }, description: '记录类型 (A, AAAA, MX, TXT, CNAME)' },
+          ],
+          responses: { ...ApiResponse('DnsResult'), ...ApiErrorResponse() },
+        },
+      },
+      '/api/quote': {
+        get: {
+          tags: ['娱乐'],
+          summary: '每日一言',
+          description: '随机获取一句励志或优美的话语',
+          responses: { ...ApiResponse('QuoteResult'), ...ApiErrorResponse() },
+        },
+      },
     },
   },
   apis: [],

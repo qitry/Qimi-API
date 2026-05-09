@@ -18,23 +18,33 @@
 ```
 src/
 ├── app.ts              # Express entry point (port 3000)
-├── lib/swagger.ts      # OpenAPI spec definition
+├── lib/swagger.ts      # OpenAPI spec definition (JSDoc-based)
 └── routes/
     ├── index.ts        # Route registration (all /api/*)
     ├── weather.ts      # GET /api/weather
     ├── ip.ts           # GET /api/ip
-    ├── search.ts       # GET /api/search (Bing)
-    ├── suggest.ts      # GET /api/suggest (百度建议)
-    ├── baidu-search.ts # GET /api/baidu-search
     ├── history.ts      # GET /api/history
     ├── lunar.ts        # GET /api/lunar
     ├── 60s.ts          # GET /api/60s
+    ├── bing.ts         # GET /api/bing (wallpaper)
+    ├── qrcode.ts       # GET /api/qrcode
+    ├── exchange-rate.ts # GET /api/exchange-rate
     └── hot-*.ts        # GET /api/hot/{weibo,baidu,douyin,bilibili,zhihu,qqnews-hot,qqnews-curation,news163-toutiao}
 
 lib/
 ├── core/               # rateLimit, logger, error, env
-└── utils/              # response, helpers, hot
+└── utils/              # response, helpers, hot, cache, http
+
+history_today/          # Static JSON files for historical events (01-12.json)
 ```
+
+## Architecture Notes
+
+- **Unified Response Format**: All endpoints use `success()`/`error()` from `lib/utils/response.ts`
+- **Rate Limiting**: 80 requests/hour per IP, configured in `src/app.ts`
+- **Hot Endpoints**: Cached (30 min TTL) via `lib/utils/cache.ts`, fetched from `cdn.lylme.com/api/hot/`
+- **Swagger**: Auto-generated from JSDoc comments in route handlers
+- **TypeScript Paths**: `@/*` alias maps to `lib/*` (see tsconfig.json)
 
 ## API Docs
 
@@ -42,20 +52,20 @@ lib/
 - OpenAPI JSON: `/api/docs.json`
 - API endpoint list: `GET /api`
 
+## Development Workflow
+
+- Pre-commit hooks run `lint-staged` automatically
+- ESLint + Prettier configured with specific rules
+- Test script requires server to be running (`yarn dev & && yarn test`)
+- Tests use curl + jq; run `yarn test --raw` for raw JSON output
+
 ## Testing
 
 ```bash
 yarn dev &          # start server
 yarn test           # run smoke tests
+yarn test --raw     # raw JSON output
 ```
-
-## Rate Limiting
-
-- 80 requests per hour per IP (configurable via env)
-
-## Hot Endpoints (all from `cdn.lylme.com`)
-
-`/api/hot/weibo`, `/api/hot/baidu`, `/api/hot/douyin`, `/api/hot/bilibili`, `/api/hot/zhihu`, `/api/hot/qqnews-hot`, `/api/hot/qqnews-curation`, `/api/hot/news163-toutiao`
 
 ## Environment Variables
 
