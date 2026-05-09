@@ -19,21 +19,18 @@
 src/
 ├── app.ts              # Express entry point (port 3000)
 ├── lib/swagger.ts      # OpenAPI spec definition (JSDoc-based)
-└── routes/
+└── api/
     ├── index.ts        # Route registration (all /api/*)
-    ├── weather.ts      # GET /api/weather
-    ├── ip.ts           # GET /api/ip
-    ├── history.ts      # GET /api/history
-    ├── lunar.ts        # GET /api/lunar
-    ├── 60s.ts          # GET /api/60s
-    ├── bing.ts         # GET /api/bing (wallpaper)
-    ├── qrcode.ts       # GET /api/qrcode
-    ├── exchange-rate.ts # GET /api/exchange-rate
-    └── hot-*.ts        # GET /api/hot/{weibo,baidu,douyin,bilibili,zhihu,qqnews-hot,qqnews-curation,news163-toutiao}
+    ├── someapi/        # General utility APIs (weather, ip, bing, qrcode, etc.)
+    ├── minecraft/      # Minecraft APIs (player, names, skin)
+    └── hot/            # Hot list endpoints (weibo, baidu, douyin, etc.)
 
 lib/
 ├── core/               # rateLimit, logger, error, env
 └── utils/              # response, helpers, hot, cache, http
+
+public/
+└── test.html           # API test panel (/test)
 
 history_today/          # Static JSON files for historical events (01-12.json)
 ```
@@ -43,7 +40,9 @@ history_today/          # Static JSON files for historical events (01-12.json)
 - **Unified Response Format**: All endpoints use `success()`/`error()` from `lib/utils/response.ts`
 - **Rate Limiting**: 80 requests/hour per IP, configured in `src/app.ts`
 - **Hot Endpoints**: Cached (30 min TTL) via `lib/utils/cache.ts`, fetched from `cdn.lylme.com/api/hot/`
-- **Swagger**: Auto-generated from JSDoc comments in route handlers
+- **Minecraft Endpoints**: Cached (60 min TTL) via `lib/utils/cache.ts`, use Mojang official API
+- **Avatar Endpoints**: Cached (24h TTL), supports external (DiceBear/Robohash) and algorithmic generation
+- **Swagger**: Generated from route definitions in `src/lib/swagger.ts`
 - **TypeScript Paths**: `@/*` alias maps to `lib/*` (see tsconfig.json)
 
 ## API Docs
