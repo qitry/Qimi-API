@@ -1,31 +1,39 @@
 import type { Express } from 'express';
 
-import weatherHandler from './weather';
-import ipHandler from './ip';
-import historyHandler from './history';
-import lunarHandler from './lunar';
-import sixtyHandler from './60s';
-import bingHandler from './bing';
-import qrcodeHandler from './qrcode';
-import exchangeRateHandler from './exchange-rate';
-import base64Handler from './base64';
-import timestampHandler from './timestamp';
-import regexHandler from './regex';
-import unitHandler from './unit';
-import passwordHandler from './password';
-import colorHandler from './color';
-import pingHandler from './ping';
-import dnsHandler from './dns';
-import quoteHandler from './quote';
+import {
+  weatherHandler,
+  ipHandler,
+  historyHandler,
+  lunarHandler,
+  sixtyHandler,
+  bingHandler,
+  qrcodeHandler,
+  exchangeRateHandler,
+  base64Handler,
+  timestampHandler,
+  regexHandler,
+  unitHandler,
+  passwordHandler,
+  colorHandler,
+  pingHandler,
+  dnsHandler,
+  quoteHandler,
+  avatarHandler,
+  abstractAvatarHandler,
+} from './someapi';
 
-import weiboHotHandler from './hot-weibo';
-import baiduHotHandler from './hot-baidu';
-import douyinHotHandler from './hot-douyin';
-import bilibiliHotHandler from './hot-bilibili';
-import zhihuHotHandler from './hot-zhihu';
-import qqnewsHotHotHandler from './hot-qqnews-hot';
-import qqnewsCurationHotHandler from './hot-qqnews-curation';
-import news163ToutiaoHotHandler from './hot-news163-toutiao';
+import { playerHandler, namesHandler, skinHandler } from './minecraft';
+
+import {
+  weiboHotHandler,
+  baiduHotHandler,
+  douyinHotHandler,
+  bilibiliHotHandler,
+  zhihuHotHandler,
+  qqnewsHotHotHandler,
+  qqnewsCurationHotHandler,
+  news163ToutiaoHotHandler,
+} from './hot';
 
 export function registerRoutes(app: Express): void {
   app.get('/api/weather', weatherHandler);
@@ -45,6 +53,12 @@ export function registerRoutes(app: Express): void {
   app.get('/api/ping', pingHandler);
   app.get('/api/dns', dnsHandler);
   app.get('/api/quote', quoteHandler);
+  app.get('/api/avatar', avatarHandler);
+  app.get('/api/abstract-avatar', abstractAvatarHandler);
+
+  app.get('/api/minecraft/player', playerHandler);
+  app.get('/api/minecraft/names', namesHandler);
+  app.get('/api/minecraft/skin', skinHandler);
 
   app.get('/api/hot/weibo', weiboHotHandler);
   app.get('/api/hot/baidu', baiduHotHandler);

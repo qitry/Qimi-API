@@ -1,0 +1,9 @@
+export { default as hotHandler } from './main';
+export { default as weiboHotHandler } from './weibo';
+export { default as baiduHotHandler } from './baidu';
+export { default as douyinHotHandler } from './douyin';
+export { default as bilibiliHotHandler } from './bilibili';
+export { default as zhihuHotHandler } from './zhihu';
+export { default as qqnewsHotHotHandler } from './qqnews-hot';
+export { default as qqnewsCurationHotHandler } from './qqnews-curation';
+export { default as news163ToutiaoHotHandler } from './news163-toutiao';

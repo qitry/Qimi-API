@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { success, error } from '../../lib/utils/response';
+import { success, error } from '../../../lib/utils/response';
 import fs from 'fs';
 import path from 'path';
 

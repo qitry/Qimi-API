@@ -87,6 +87,7 @@ const options: swaggerJsdoc.Options = {
       { name: '文本处理', description: '文本编解码和转换' },
       { name: '网络工具', description: '网络检测和诊断' },
       { name: '娱乐', description: '娱乐和励志内容' },
+      { name: 'Minecraft', description: 'Minecraft 游戏相关 API' },
     ],
     components: {
       schemas: {
@@ -326,6 +327,60 @@ const options: swaggerJsdoc.Options = {
             index: { type: 'integer', description: '索引' },
             total: { type: 'integer', description: '总数量' },
             date: { type: 'string', description: '日期' },
+          },
+        },
+        AvatarInfo: {
+          type: 'object',
+          properties: {
+            url: { type: 'string', description: '头像图片 URL' },
+            style: { type: 'string', description: '头像风格' },
+            size: { type: 'integer', description: '头像尺寸 (px)' },
+            seed: { type: 'string', description: '生成种子' },
+          },
+        },
+        AbstractAvatarInfo: {
+          type: 'object',
+          properties: {
+            svg: { type: 'string', description: 'SVG 头像代码' },
+            seed: { type: 'string', description: '生成种子' },
+            colors: { type: 'array', items: { type: 'string' }, description: '使用的颜色列表' },
+          },
+        },
+        McPlayerProfile: {
+          type: 'object',
+          properties: {
+            uuid: { type: 'string', description: '玩家 UUID（带连字符）' },
+            name: { type: 'string', description: '玩家名' },
+          },
+        },
+        McNameEntry: {
+          type: 'object',
+          properties: {
+            name: { type: 'string', description: '玩家名' },
+            changedToAt: { type: 'integer', description: '修改时间戳（毫秒），null 表示当前名称' },
+          },
+        },
+        McSkinData: {
+          type: 'object',
+          properties: {
+            name: { type: 'string', description: '玩家名' },
+            uuid: { type: 'string', description: '玩家 UUID' },
+            timestamp: { type: 'integer', nullable: true, description: '皮肤更新时间戳' },
+            skin: {
+              type: 'object',
+              nullable: true,
+              properties: {
+                url: { type: 'string', description: '皮肤图片 URL' },
+                model: { type: 'string', enum: ['default', 'slim'], description: '皮肤模型类型' },
+              },
+            },
+            cape: {
+              type: 'object',
+              nullable: true,
+              properties: {
+                url: { type: 'string', description: '披风图片 URL' },
+              },
+            },
           },
         },
       },
@@ -571,6 +626,108 @@ const options: swaggerJsdoc.Options = {
           summary: '每日一言',
           description: '随机获取一句励志或优美的话语',
           responses: { ...ApiResponse('QuoteResult'), ...ApiErrorResponse() },
+        },
+      },
+      '/api/avatar': {
+        get: {
+          tags: ['工具'],
+          summary: '随机头像生成',
+          description: '根据种子字符串生成随机头像，支持多种风格',
+          parameters: [
+            { name: 'seed', in: 'query', required: false, schema: { type: 'string', default: 'default' }, description: '生成种子（可以是名字、ID等）' },
+            { name: 'style', in: 'query', required: false, schema: { type: 'string', enum: ['uiavatars', 'dicebear-avataaars', 'dicebear-initials', 'dicebear-bottts', 'robohash'], default: 'dicebear-avataaars' }, description: '头像风格' },
+            { name: 'size', in: 'query', required: false, schema: { type: 'integer', minimum: 50, maximum: 1000, default: 200 }, description: '头像尺寸 (px)' },
+            { name: 'output', in: 'query', required: false, schema: { type: 'string', enum: ['json', 'image'], default: 'json' }, description: '输出类型' },
+          ],
+          responses: {
+            '200': {
+              description: '成功',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      code: { type: 'integer', example: 200 },
+                      message: { type: 'string', example: 'success' },
+                      data: { $ref: '#/components/schemas/AvatarInfo' },
+                    },
+                  },
+                },
+                'image/svg+xml': { schema: { type: 'string', format: 'binary' } },
+                'image/png': { schema: { type: 'string', format: 'binary' } },
+              },
+            },
+            '400': {
+              description: '参数错误',
+              content: { 'application/json': { schema: { $ref: '#/components/schemas/ApiError' } } },
+            },
+          },
+        },
+      },
+      '/api/abstract-avatar': {
+        get: {
+          tags: ['工具'],
+          summary: '随机抽象头像生成',
+          description: '基于算法生成随机的抽象头像，类似 GitHub identicon 或 Gravatar 默认头像风格',
+          parameters: [
+            { name: 'seed', in: 'query', required: true, schema: { type: 'string', maxLength: 64 }, description: '生成种子（可以是邮箱、用户名、ID等）' },
+            { name: 'output', in: 'query', required: false, schema: { type: 'string', enum: ['json', 'image'], default: 'json' }, description: '输出类型' },
+          ],
+          responses: {
+            '200': {
+              description: '成功',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      code: { type: 'integer', example: 200 },
+                      message: { type: 'string', example: 'success' },
+                      data: { $ref: '#/components/schemas/AbstractAvatarInfo' },
+                    },
+                  },
+                },
+                'image/svg+xml': { schema: { type: 'string', format: 'binary' } },
+              },
+            },
+            '400': {
+              description: '参数错误',
+              content: { 'application/json': { schema: { $ref: '#/components/schemas/ApiError' } } },
+            },
+          },
+        },
+      },
+      '/api/minecraft/player': {
+        get: {
+          tags: ['Minecraft'],
+          summary: '玩家 UUID 查询',
+          description: '通过玩家名查询 Mojang 正版 UUID',
+          parameters: [
+            { name: 'username', in: 'query', required: true, schema: { type: 'string' }, description: 'Minecraft 玩家名' },
+          ],
+          responses: { ...ApiResponse('McPlayerProfile'), ...ApiErrorResponse() },
+        },
+      },
+      '/api/minecraft/names': {
+        get: {
+          tags: ['Minecraft'],
+          summary: '玩家历史名称查询',
+          description: '通过 UUID 查询玩家的历史名称记录',
+          parameters: [
+            { name: 'uuid', in: 'query', required: true, schema: { type: 'string' }, description: '玩家 UUID（带或不带连字符均可）' },
+          ],
+          responses: { ...ApiResponse('McNameEntry'), ...ApiErrorResponse() },
+        },
+      },
+      '/api/minecraft/skin': {
+        get: {
+          tags: ['Minecraft'],
+          summary: '玩家皮肤/披风查询',
+          description: '通过 UUID 获取玩家的皮肤和披风 URL',
+          parameters: [
+            { name: 'uuid', in: 'query', required: true, schema: { type: 'string' }, description: '玩家 UUID（带或不带连字符均可）' },
+          ],
+          responses: { ...ApiResponse('McSkinData'), ...ApiErrorResponse() },
         },
       },
     },

@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
-import httpClient from '../../lib/utils/http';
-import { success, error } from '../../lib/utils/response';
-import { logger } from '../../lib/core/logger';
+import httpClient from '../../../lib/utils/http';
+import { success, error } from '../../../lib/utils/response';
+import { logger } from '../../../lib/core/logger';
 
 const BAIDU_HOT_API = 'https://zj.v.api.aa1.cn/api/baidu-rs/';
 

@@ -1,9 +1,9 @@
 import type { Request, Response } from 'express';
-import httpClient from '../../lib/utils/http';
-import { success, error } from '../../lib/utils/response';
-import { logger } from '../../lib/core/logger';
-import { cache } from '../../lib/utils/cache';
-import { parseInteger } from '../../lib/utils/helpers';
+import httpClient from '../../../lib/utils/http';
+import { success, error } from '../../../lib/utils/response';
+import { logger } from '../../../lib/core/logger';
+import { cache } from '../../../lib/utils/cache';
+import { parseInteger } from '../../../lib/utils/helpers';
 
 const BING_API = 'https://cn.bing.com/HPImageArchive.aspx';
 const CACHE_TTL = 60 * 60 * 1000;

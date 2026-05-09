@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
-import { success } from '../../lib/utils/response';
-import { getAllHotData, getPlatformData } from '../../lib/utils/hot';
+import { success } from '../../../lib/utils/response';
+import { getAllHotData, getPlatformData } from '../../../lib/utils/hot';
 
 export default async function hotHandler(req: Request, res: Response): Promise<void> {
   const { type } = req.query;

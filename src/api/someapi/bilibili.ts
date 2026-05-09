@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
-import httpClient from '../../lib/utils/http';
-import { success, error } from '../../lib/utils/response';
-import { logger } from '../../lib/core/logger';
+import httpClient from '../../../lib/utils/http';
+import { success, error } from '../../../lib/utils/response';
+import { logger } from '../../../lib/core/logger';
 
 const BILIBILI_API = 'https://api.bilibili.com/x/web-interface/ranking/v2';
 

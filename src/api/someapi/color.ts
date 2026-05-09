@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { success, error } from '../../lib/utils/response';
+import { success, error } from '../../../lib/utils/response';
 
 export default async function colorHandler(req: Request, res: Response): Promise<void> {
   const { color, format } = req.query;

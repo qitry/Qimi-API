@@ -1,9 +1,9 @@
 import type { Request, Response } from 'express';
-import httpClient from '../../lib/utils/http';
-import { success, error } from '../../lib/utils/response';
-import { logger } from '../../lib/core/logger';
-import { cache } from '../../lib/utils/cache';
-import { parseQuery } from '../../lib/utils/helpers';
+import httpClient from '../../../lib/utils/http';
+import { success, error } from '../../../lib/utils/response';
+import { logger } from '../../../lib/core/logger';
+import { cache } from '../../../lib/utils/cache';
+import { parseQuery } from '../../../lib/utils/helpers';
 
 const EXCHANGE_API = 'https://open.er-api.com/v6/latest';
 const CACHE_TTL = 60 * 60 * 1000;

@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { success, error } from '../../lib/utils/response';
+import { success, error } from '../../../lib/utils/response';
 
 export default async function passwordHandler(req: Request, res: Response): Promise<void> {
   const { length, uppercase, lowercase, numbers, symbols } = req.query;

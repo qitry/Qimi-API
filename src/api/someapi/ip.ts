@@ -1,9 +1,9 @@
 import type { Request, Response } from 'express';
-import httpClient from '../../lib/utils/http';
-import { success, error } from '../../lib/utils/response';
-import { logger } from '../../lib/core/logger';
-import { cache } from '../../lib/utils/cache';
-import { getClientIp, normalizeIp, isReservedIp } from '../../lib/utils/helpers';
+import httpClient from '../../../lib/utils/http';
+import { success, error } from '../../../lib/utils/response';
+import { logger } from '../../../lib/core/logger';
+import { cache } from '../../../lib/utils/cache';
+import { getClientIp, normalizeIp, isReservedIp } from '../../../lib/utils/helpers';
 
 const IP_API_BASE_URL = 'http://ip-api.com/json/';
 

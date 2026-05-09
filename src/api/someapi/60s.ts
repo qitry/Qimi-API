@@ -1,8 +1,8 @@
 import type { Request, Response } from 'express';
-import httpClient from '../../lib/utils/http';
-import { success } from '../../lib/utils/response';
-import { logger } from '../../lib/core/logger';
-import { cache } from '../../lib/utils/cache';
+import httpClient from '../../../lib/utils/http';
+import { success } from '../../../lib/utils/response';
+import { logger } from '../../../lib/core/logger';
+import { cache } from '../../../lib/utils/cache';
 
 const SIXTY_API = 'https://cdn.lylme.com/api/60s/';
 const CACHE_TTL = 60 * 60 * 1000;

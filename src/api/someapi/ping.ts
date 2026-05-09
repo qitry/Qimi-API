@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { success, error } from '../../lib/utils/response';
+import { success, error } from '../../../lib/utils/response';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 

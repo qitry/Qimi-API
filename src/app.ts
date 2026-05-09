@@ -3,7 +3,7 @@ import path from 'path';
 import cors from 'cors';
 import compression from 'compression';
 import type { RequestHandler } from 'express';
-import { registerRoutes } from './routes';
+import { registerRoutes } from './api';
 import { rateLimit } from '../lib/core/rateLimit';
 import { logger } from '../lib/core/logger';
 import { getErrorResponse } from '../lib/core/error';
@@ -41,6 +41,8 @@ app.get('/api/docs.json', (_req: Request, res: Response) => {
   res.setHeader('Content-Type', 'application/json');
   res.send(swaggerSpec);
 });
+
+app.use('/test', express.static(path.join(process.cwd(), 'public/test.html'), { maxAge: '1d' }));
 
 app.get('/api', (_req: Request, res: Response) => {
   const endpoints: string[] = [];

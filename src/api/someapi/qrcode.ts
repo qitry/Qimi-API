@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 import QRCode from 'qrcode';
-import { error } from '../../lib/utils/response';
-import { parseInteger } from '../../lib/utils/helpers';
+import { error } from '../../../lib/utils/response';
+import { parseInteger } from '../../../lib/utils/helpers';
 
 export default async function qrcodeHandler(req: Request, res: Response): Promise<void> {
   const text = (req.query.text as string)?.trim();
